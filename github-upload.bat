@@ -22,9 +22,9 @@ if "%commit_msg%"=="" (
 echo.
 
 echo [4/4] Pushing to GitHub...
-set /p branch="Enter branch name (or press Enter for clean-branch): "
+set /p branch="Enter branch name (or press Enter for main): "
 if "%branch%"=="" (
-    git push origin master
+    git push origin main
 ) else (
     git push origin %branch%
 )
@@ -34,4 +34,4 @@ echo ===================================================
 echo Deployment complete! Your code is now on GitHub.
 echo ===================================================
 echo.
-pause 
+pause
