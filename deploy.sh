@@ -17,8 +17,8 @@ source .env
 
 # Validate required environment variables
 if [ -z "$PORT" ]; then
-    echo "⚠️  Warning: PORT not set in .env, using default 3000"
-    export PORT=3000
+    echo "⚠️  Warning: PORT not set in .env, using default 3002"
+    export PORT=3002
 fi
 
 if [ -z "$NODE_ENV" ]; then
@@ -39,6 +39,32 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
-# Start the application
-echo "🚀 Starting JARVIS API Server..."
-npm run start
+# Check if PM2 is installed
+if ! command -v pm2 &> /dev/null; then
+    echo "📦 Installing PM2..."
+    npm install -g pm2
+fi
+
+# Stop existing PM2 process if running
+echo "🔄 Stopping existing PM2 process..."
+pm2 stop jarvis-api 2>/dev/null || true
+pm2 delete jarvis-api 2>/dev/null || true
+
+# Start with PM2
+echo "🚀 Starting JARVIS API Server with PM2..."
+pm2 start ecosystem.config.json --env $NODE_ENV
+
+# Save PM2 configuration
+pm2 save
+
+# Setup PM2 startup if not already configured
+if ! pm2 startup | grep -q "already"; then
+    echo "⚙️  Configuring PM2 startup..."
+    pm2 startup
+fi
+
+echo ""
+echo "✅ Deployment completed successfully!"
+echo "📊 Use 'pm2 status' to check the process status"
+echo "📋 Use 'pm2 logs jarvis-api' to view logs"
+echo "🔄 Use 'pm2 restart jarvis-api' to restart the service"
