@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS API Logs</title>
+  <link rel="stylesheet" href="/admin-styles.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .logs-page {
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+    .logs-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .logs-main {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(59, 130, 246, 0.1);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+    .logs-controls {
+      padding: 20px 32px;
+      background: rgba(59, 130, 246, 0.05);
+      border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .logs-controls button {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logs-controls button:hover {
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      transform: translateY(-2px);
+    }
+    .log-stats {
+      margin-left: auto;
+      display: flex;
+      gap: 20px;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .log-stats span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .logs-content {
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body class="logs-page">
+  <div class="logs-wrapper">
+    <header style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 32px 40px; border-radius: 20px 20px 0 0; margin-bottom: 0;">
+      <h1 style="color: white; font-size: 2.2rem; font-weight: 700; display: flex; align-items: center; gap: 12px; margin: 0;">
+        <i class="fas fa-clipboard-list"></i> JARVIS API Logs
+      </h1>
+      <nav style="display: flex; gap: 16px; margin-top: 16px;">
+        <a href="/jarvis" style="color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;">
+          <i class="fas fa-cogs"></i> Admin Panel
+        </a>
+        <a href="/jarvis/chat" style="color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;">
+          <i class="fas fa-comments"></i> Chat UI
+        </a>
+        <a href="/docs" style="color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;">
+          <i class="fas fa-book"></i> Documentation
+        </a>
+      </nav>
+    </header>
+    
+    <div class="logs-main">
+      <div class="logs-controls">
+        <button onclick="loadLogs()">
+          <i class="fas fa-sync"></i> Refresh
+        </button>
+        <button onclick="clearLogs()">
+          <i class="fas fa-trash"></i> Clear View
+        </button>
+        <button onclick="exportLogs()">
+          <i class="fas fa-download"></i> Export
+        </button>
+        <div class="log-stats">
+          <span><i class="fas fa-list"></i> <span id="logCount">0</span> entries</span>
+          <span><i class="fas fa-clock"></i> Last updated: <span id="lastUpdate">-</span></span>
+        </div>
+      </div>
+      
+      <div class="logs-content">
+        <div class="logs-container" id="logsContainer">
+          <div class="logs-header">Loading logs...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentLogs = [];
+
+    async function loadLogs() {
+      try {
+        const res = await fetch('/admin/logs');
+        const data = await res.json();
+        currentLogs = data.logs;
+        
+        document.getElementById('logCount').textContent = data.count || 0;
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        
+        const logsDiv = document.getElementById('logsContainer');
+        
+        if (!data.logs || !data.logs.length) {
+          logsDiv.innerHTML = '<div class="no-logs"><i class="fas fa-inbox"></i> No logs found.</div>';
+          return;
+        }
+
+        let html = '<div class="logs-header">Recent API Requests</div>';
+        
+        data.logs.forEach(line => {
+          try {
+            const log = JSON.parse(line);
+            const statusClass = log.status >= 200 && log.status < 300 ? 'success' : 
+                               log.status >= 400 && log.status < 500 ? 'warning' : 'error';
+            
+            html += `
+              <div class="log-entry">
+                <div class="log-time">${new Date(log.time).toLocaleTimeString()}</div>
+                <div class="log-method method-${log.method.toLowerCase()}">${log.method}</div>
+                <div class="log-url" title="${log.url}">${log.url}</div>
+                <div class="log-status status-${statusClass}">${log.status}</div>
+                <div class="log-duration">${log.duration}ms</div>
+              </div>
+            `;
+          } catch (e) {
+            // Skip malformed log entries
+          }
+        });
+        
+        logsDiv.innerHTML = html;
+      } catch (error) {
+        console.error('Error loading logs:', error);
+        document.getElementById('logsContainer').innerHTML = 
+          '<div class="error"><i class="fas fa-exclamation-triangle"></i> Error loading logs</div>';
+      }
+    }
+
+    function clearLogs() {
+      document.getElementById('logsContainer').innerHTML = 
+        '<div class="no-logs"><i class="fas fa-broom"></i> Logs cleared from view</div>';
+      document.getElementById('logCount').textContent = '0';
+    }
+
+    function exportLogs() {
+      if (!currentLogs.length) {
+        alert('No logs to export');
+        return;
+      }
+      
+      const logData = currentLogs.join('\n');
+      const blob = new Blob([logData], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `jarvis-api-logs-${new Date().toISOString().split('T')[0]}.log`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Auto-refresh logs every 30 seconds
+    setInterval(loadLogs, 30000);
+    
+    // Initial load
+    loadLogs();
+  </script>
+</body>
+</html>

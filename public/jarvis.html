@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS - AI Assistant</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <h1>JARVIS</h1>
+                <span class="version">v2.0.0</span>
+            </div>
+            <div class="status" id="status">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+
+        <!-- AI Service Selector -->
+        <div class="service-selector">
+            <div class="selector-header">
+                <i class="fas fa-cogs"></i>
+                <span>AI Service</span>
+            </div>
+            <div class="service-options">
+                <label class="service-option">
+                    <input type="radio" name="service" value="auto" checked>
+                    <span class="checkmark"></span>
+                    <div class="service-info">
+                        <strong>Auto Priority</strong>
+                        <small>Fallback system (Recommended)</small>
+                    </div>
+                </label>
+                <label class="service-option">
+                    <input type="radio" name="service" value="0">
+                    <span class="checkmark"></span>
+                    <div class="service-info">
+                        <strong>Google Gemini</strong>
+                        <small>gemini-1.5-flash</small>
+                    </div>
+                </label>
+                <label class="service-option">
+                    <input type="radio" name="service" value="1">
+                    <span class="checkmark"></span>
+                    <div class="service-info">
+                        <strong>GitHub OpenAI</strong>
+                        <small>gpt-4o-mini</small>
+                    </div>
+                </label>
+                <label class="service-option">
+                    <input type="radio" name="service" value="2">
+                    <span class="checkmark"></span>
+                    <div class="service-info">
+                        <strong>OpenRouter</strong>
+                        <small>mistral-7b-instruct</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">
+                            Hello! I'm JARVIS, your AI assistant. I'm powered by multiple AI services with automatic fallback. How can I help you today?
+                        </div>
+                        <div class="message-info">
+                            <span class="message-time">Just now</span>
+                            <span class="message-service">System</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Type your message here..." 
+                        rows="1"
+                        maxlength="2000"
+                    ></textarea>
+                    <button id="sendButton" class="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="input-controls">
+                    <div class="controls-left">
+                        <div class="control-group">
+                            <label for="temperature">Temperature: <span id="tempValue">0.7</span></label>
+                            <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
+                        </div>
+                        <div class="control-group">
+                            <label for="maxTokens">Max Tokens: <span id="tokensValue">1000</span></label>
+                            <input type="range" id="maxTokens" min="100" max="4000" step="100" value="1000">
+                        </div>
+                    </div>
+                    <div class="controls-right">
+                        <button id="clearButton" class="clear-button">
+                            <i class="fas fa-trash"></i> Clear Chat
+                        </button>
+                        <button id="testServices" class="test-button">
+                            <i class="fas fa-flask"></i> Test Services
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <div class="loading-text">Processing your request...</div>
+                <div class="loading-service" id="loadingService"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>

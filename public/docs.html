@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS AI API - Documentation</title>
+    <link rel="stylesheet" href="/docs-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="sidebar">
+            <div class="nav-header">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    <h2>JARVIS API Docs</h2>
+                </div>
+                <div class="version-badge">v2.0.0</div>
+            </div>
+            
+            <div class="nav-links">
+                <a href="#overview" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    Overview
+                </a>
+                <a href="#getting-started" class="nav-link">
+                    <i class="fas fa-rocket"></i>
+                    Getting Started
+                </a>
+                <a href="#authentication" class="nav-link">
+                    <i class="fas fa-key"></i>
+                    Authentication
+                </a>
+                <a href="#endpoints" class="nav-link">
+                    <i class="fas fa-plug"></i>
+                    API Endpoints
+                </a>
+                <a href="#fallback-system" class="nav-link">
+                    <i class="fas fa-shield-alt"></i>
+                    Fallback System
+                </a>
+                <a href="#examples" class="nav-link">
+                    <i class="fas fa-code"></i>
+                    Code Examples
+                </a>
+                <a href="#error-handling" class="nav-link">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Error Handling
+                </a>
+                <a href="#rate-limits" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Rate Limits
+                </a>
+                <a href="#sdks" class="nav-link">
+                    <i class="fas fa-cube"></i>
+                    SDKs & Tools
+                </a>
+            </div>
+            
+            <div class="nav-footer">
+                <a href="/jarvis" class="jarvis-link">
+                    <i class="fas fa-comments"></i>
+                    Try JARVIS UI
+                </a>
+                <a href="/health" class="status-link">
+                    <i class="fas fa-heartbeat"></i>
+                    API Status
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Overview Section -->
+            <section id="overview" class="doc-section">
+                <div class="section-header">
+                    <h1>Professional AI API with Multi-Provider Fallback</h1>
+                    <p class="lead">A robust AI API server with automatic fallback system supporting multiple AI providers with priority-based routing.</p>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Automatic Fallback</h3>
+                        <p>Seamless switching between AI providers when one service fails</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <h3>Multi-Provider</h3>
+                        <p>Google Gemini, GitHub OpenAI, and OpenRouter integration</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-sort-numeric-down"></i>
+                        </div>
+                        <h3>Priority-Based</h3>
+                        <p>Intelligent routing based on service priority and availability</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>Unified Interface</h3>
+                        <p>Single endpoint for all providers with consistent responses</p>
+                    </div>
+                </div>
+
+                <div class="priority-system">
+                    <h3>Service Priority Order</h3>
+                    <div class="priority-list">
+                        <div class="priority-item priority-1">
+                            <span class="priority-number">1</span>
+                            <div class="priority-info">
+                                <strong>Google Gemini</strong>
+                                <span>gemini-1.5-flash - Primary service</span>
+                            </div>
+                        </div>
+                        <div class="priority-item priority-2">
+                            <span class="priority-number">2</span>
+                            <div class="priority-info">
+                                <strong>GitHub OpenAI</strong>
+                                <span>openai/gpt-4.1 - Secondary fallback</span>
+                            </div>
+                        </div>
+                        <div class="priority-item priority-3">
+                            <span class="priority-number">3</span>
+                            <div class="priority-info">
+                                <strong>OpenRouter</strong>
+                                <span>mistralai/mistral-7b-instruct - Tertiary fallback</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Getting Started Section -->
+            <section id="getting-started" class="doc-section">
+                <h2>Getting Started</h2>
+                
+                <div class="step-guide">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Install Dependencies</h4>
+                            <pre><code class="language-bash">npm install</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Set Environment Variables</h4>
+                            <pre><code class="language-bash"># Copy example environment file
+cp .env.example .env
+
+# Edit .env and add your API keys
+GEMINI_API_KEY=your_gemini_api_key_here
+GITHUB_TOKEN=your_github_token_here
+OPENROUTER_API_KEY=your_openrouter_api_key_here</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Start the Server</h4>
+                            <pre><code class="language-bash">npm start</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">                            <h4>Test Your First Request</h4>
+                            <pre><code class="language-bash">curl -X POST https://jarvis-api.herokuapp.com/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello, AI!"}'</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Note:</strong> You need at least one API key configured for the system to work. The more services you configure, the better the fallback reliability.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Authentication Section -->
+            <section id="authentication" class="doc-section">
+                <h2>Authentication</h2>
+                
+                <p>This API currently requires no authentication for requests, but you need to configure API keys for the AI services:</p>
+                
+                <div class="auth-grid">
+                    <div class="auth-card">
+                        <h4><i class="fas fa-brain"></i> Google Gemini</h4>
+                        <p>Get your API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></p>
+                        <code>GEMINI_API_KEY=AIzaSy...</code>
+                    </div>
+                    
+                    <div class="auth-card">
+                        <h4><i class="fab fa-github"></i> GitHub OpenAI</h4>
+                        <p>Create a token at <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings</a></p>
+                        <code>GITHUB_TOKEN=github_pat_...</code>
+                    </div>
+                    
+                    <div class="auth-card">
+                        <h4><i class="fas fa-route"></i> OpenRouter</h4>
+                        <p>Get your key from <a href="https://openrouter.ai/keys" target="_blank">OpenRouter Keys</a></p>
+                        <code>OPENROUTER_API_KEY=sk-or-v1-...</code>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Endpoints Section -->
+            <section id="endpoints" class="doc-section">
+                <h2>API Endpoints</h2>
+
+                <!-- Chat Endpoint -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/chat</span>
+                        <span class="description">Send message to AI assistant with automatic fallback</span>
+                    </div>
+                    
+                    <div class="endpoint-content">
+                        <h4>Request Body</h4>
+                        <pre><code class="language-json">{
+  "message": "Your question or request here",
+  "temperature": 0.7,  // Optional: 0.0-2.0, default: 0.7
+  "max_tokens": 2000   // Optional: 1-4000, default: 2000
+}</code></pre>
+
+                        <h4>Response</h4>
+                        <pre><code class="language-json">{
+  "success": true,
+  "response": "AI response here...",
+  "metadata": {
+    "provider": "Google Gemini",
+    "model": "gemini-1.5-flash",
+    "response_time_ms": 1250,
+    "total_response_time_ms": 1250,
+    "fallback_used": false,
+    "attempts_made": 1,
+    "available_services": 3,
+    "usage": {
+      "prompt_tokens": 45,
+      "completion_tokens": 120,
+      "total_tokens": 165
+    }
+  }
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Status Endpoint -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/status</span>
+                        <span class="description">Get service status and available providers</span>
+                    </div>
+                    
+                    <div class="endpoint-content">
+                        <h4>Response</h4>
+                        <pre><code class="language-json">{
+  "success": true,
+  "status": "operational",
+  "timestamp": "2025-06-24T10:30:00.000Z",
+  "available_services": 3,
+  "total_services": 3,
+  "current_priority": "Google Gemini",
+  "services": [
+    {
+      "name": "Google Gemini",
+      "model": "gemini-1.5-flash",
+      "priority": 1,
+      "available": true
+    }
+  ]
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Test All Services -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/test</span>
+                        <span class="description">Test all AI services</span>
+                    </div>
+                    
+                    <div class="endpoint-content">
+                        <h4>Request Body (Optional)</h4>
+                        <pre><code class="language-json">{
+  "message": "Custom test message"  // Optional
+}</code></pre>
+
+                        <h4>Response</h4>
+                        <pre><code class="language-json">{
+  "success": true,
+  "total_services": 3,
+  "available_services": 3,
+  "results": [
+    {
+      "success": true,
+      "service": "Google Gemini",
+      "test_response": "Hello! How can I assist you today?",
+      "response_time": 890
+    }
+  ]
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Test Specific Service -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/test/:serviceIndex</span>
+                        <span class="description">Test specific AI service (0=Gemini, 1=GitHub, 2=OpenRouter)</span>
+                    </div>
+                    
+                    <div class="endpoint-content">
+                        <h4>URL Parameters</h4>
+                        <ul>
+                            <li><code>serviceIndex</code> - Service index (0, 1, or 2)</li>
+                        </ul>
+
+                        <h4>Request Body</h4>
+                        <pre><code class="language-json">{
+  "message": "Your message here",
+  "temperature": 0.7,  // Optional
+  "max_tokens": 1000   // Optional
+}</code></pre>
+                    </div>
+                </div>
+
+                <!-- Health Check -->
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="path">/health</span>
+                        <span class="description">Health check endpoint</span>
+                    </div>
+                    
+                    <div class="endpoint-content">
+                        <h4>Response</h4>
+                        <pre><code class="language-json">{
+  "status": "ok",
+  "healthy": true,
+  "message": "Everything is working fine.",
+  "providers": {
+    "google_gemini": true,
+    "github_openai": true,
+    "openrouter": true
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fallback System Section -->
+            <section id="fallback-system" class="doc-section">
+                <h2>Fallback System</h2>
+                
+                <p>The API implements an intelligent fallback system that automatically switches between AI providers when failures occur:</p>
+                
+                <div class="fallback-flow">
+                    <div class="flow-step">
+                        <div class="flow-icon primary">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4>Primary Attempt</h4>
+                        <p>Google Gemini (gemini-1.5-flash)</p>
+                    </div>
+                    
+                    <div class="flow-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>If fails</span>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-icon secondary">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <h4>Secondary Fallback</h4>
+                        <p>GitHub OpenAI (openai/gpt-4.1)</p>
+                    </div>
+                    
+                    <div class="flow-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>If fails</span>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-icon tertiary">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <h4>Tertiary Fallback</h4>
+                        <p>OpenRouter (mistralai/mistral-7b-instruct)</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>Fallback Behavior</h4>
+                    <ul>
+                        <li><strong>Automatic:</strong> No manual intervention required</li>
+                        <li><strong>Transparent:</strong> Response includes which service was used</li>
+                        <li><strong>Fast:</strong> Immediate retry on service failure</li>
+                        <li><strong>Reliable:</strong> Only fails if all services are unavailable</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Code Examples Section -->
+            <section id="examples" class="doc-section">
+                <h2>Code Examples</h2>
+
+                <div class="example-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="curl">cURL</button>
+                        <button class="tab-btn" data-tab="javascript">JavaScript</button>
+                        <button class="tab-btn" data-tab="python">Python</button>
+                        <button class="tab-btn" data-tab="nodejs">Node.js</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <div class="tab-panel active" id="curl">                            <h4>Basic Chat Request</h4>
+                            <pre><code class="language-bash">curl -X POST https://jarvis-api.herokuapp.com/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Explain machine learning in simple terms",
+    "temperature": 0.7,
+    "max_tokens": 500
+  }'</code></pre>                            <h4>Test All Services</h4>
+                            <pre><code class="language-bash">curl -X POST https://jarvis-api.herokuapp.com/api/test \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello from cURL!"}'</code></pre>                            <h4>Check API Status</h4>
+                            <pre><code class="language-bash">curl https://jarvis-api.herokuapp.com/api/status</code></pre>
+                        </div>
+
+                        <div class="tab-panel" id="javascript">                            <h4>Fetch API Example</h4>
+                            <pre><code class="language-javascript">async function chatWithAI(message) {
+  try {
+    const response = await fetch('https://jarvis-api.herokuapp.com/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: message,
+        temperature: 0.7,
+        max_tokens: 1000
+      })
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('AI Response:', data.response);
+      console.log('Provider Used:', data.metadata.provider);
+      console.log('Fallback Used:', data.metadata.fallback_used);
+    } else {
+      console.error('Error:', data.error);
+    }
+  } catch (error) {
+    console.error('Request failed:', error);
+  }
+}
+
+// Usage
+chatWithAI('What is the future of AI?');</code></pre>
+                        </div>
+
+                        <div class="tab-panel" id="python">                            <h4>Python Requests Example</h4>
+                            <pre><code class="language-python">import requests
+import json
+
+def chat_with_ai(message):
+    url = "https://jarvis-api.herokuapp.com/api/chat"
+    headers = {"Content-Type": "application/json"}
+    data = {
+        "message": message,
+        "temperature": 0.7,
+        "max_tokens": 1000
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        result = response.json()
+        
+        if result.get('success'):
+            print(f"AI Response: {result['response']}")
+            print(f"Provider: {result['metadata']['provider']}")
+            print(f"Response Time: {result['metadata']['response_time_ms']}ms")
+        else:
+            print(f"Error: {result.get('error')}")
+            
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+
+# Usage
+chat_with_ai("Explain quantum computing")</code></pre>
+                        </div>
+
+                        <div class="tab-panel" id="nodejs">                            <h4>Node.js Axios Example</h4>
+                            <pre><code class="language-javascript">const axios = require('axios');
+
+class AIClient {
+  constructor(baseURL = 'https://jarvis-api.herokuapp.com') {
+    this.client = axios.create({
+      baseURL,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
+  async chat(message, options = {}) {
+    try {
+      const response = await this.client.post('/api/chat', {
+        message,
+        temperature: options.temperature || 0.7,
+        max_tokens: options.maxTokens || 1000
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Chat request failed: ${error.message}`);
+    }
+  }
+
+  async getStatus() {
+    try {
+      const response = await this.client.get('/api/status');
+      return response.data;
+    } catch (error) {
+      throw new Error(`Status request failed: ${error.message}`);
+    }
+  }
+
+  async testServices() {
+    try {
+      const response = await this.client.post('/api/test');
+      return response.data;
+    } catch (error) {
+      throw new Error(`Test request failed: ${error.message}`);
+    }
+  }
+}
+
+// Usage
+const ai = new AIClient();
+
+async function example() {
+  try {
+    const result = await ai.chat('What are the benefits of renewable energy?');
+    console.log('Response:', result.response);
+    console.log('Provider:', result.metadata.provider);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
+
+example();</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Handling Section -->
+            <section id="error-handling" class="doc-section">
+                <h2>Error Handling</h2>
+                
+                <div class="error-grid">
+                    <div class="error-card">
+                        <h4>400 - Bad Request</h4>
+                        <p>Invalid request parameters</p>
+                        <pre><code class="language-json">{
+  "success": false,
+  "error": "Invalid or missing 'message' in request body."
+}</code></pre>
+                    </div>
+                    
+                    <div class="error-card">
+                        <h4>500 - Service Error</h4>
+                        <p>All AI services unavailable</p>
+                        <pre><code class="language-json">{
+  "success": false,
+  "error": "AI service temporarily unavailable. Please try again.",
+  "metadata": {
+    "available_services": 0
+  }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="error-best-practices">
+                    <h4>Best Practices</h4>
+                    <ul>
+                        <li><strong>Always check</strong> the <code>success</code> field in responses</li>
+                        <li><strong>Implement retry logic</strong> for temporary failures</li>
+                        <li><strong>Monitor</strong> the <code>fallback_used</code> field to track service reliability</li>
+                        <li><strong>Use</strong> the <code>/api/status</code> endpoint to check service health</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Rate Limits Section -->
+            <section id="rate-limits" class="doc-section">
+                <h2>Rate Limits</h2>
+                
+                <div class="rate-limit-info">
+                    <div class="rate-card">
+                        <h4>Current Limits</h4>
+                        <ul>
+                            <li><strong>Request Size:</strong> 10MB maximum</li>
+                            <li><strong>Token Limits:</strong> 1-4000 tokens per request</li>
+                            <li><strong>Temperature:</strong> 0.0-2.0 range</li>
+                            <li><strong>Timeout:</strong> 30 seconds per request</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="rate-card">
+                        <h4>Service-Specific Limits</h4>
+                        <p>Rate limits depend on the individual AI service APIs:</p>
+                        <ul>
+                            <li><strong>Google Gemini:</strong> Per Google's API limits</li>
+                            <li><strong>GitHub OpenAI:</strong> Per GitHub's rate limits</li>
+                            <li><strong>OpenRouter:</strong> Per OpenRouter's limits</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SDKs & Tools Section -->
+            <section id="sdks" class="doc-section">
+                <h2>SDKs & Tools</h2>
+                
+                <div class="sdk-grid">
+                    <div class="sdk-card">
+                        <div class="sdk-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h4>JARVIS UI</h4>
+                        <p>Interactive chat interface for testing and using the API</p>
+                        <a href="/jarvis" class="sdk-link">Try JARVIS →</a>
+                    </div>
+                    
+                    <div class="sdk-card">
+                        <div class="sdk-icon">
+                            <i class="fas fa-terminal"></i>
+                        </div>
+                        <h4>CLI Tool</h4>
+                        <p>Command line interface for API testing</p>
+                        <pre><code>curl -X POST /api/chat -d '{"message": "test"}'</code></pre>
+                    </div>
+                    
+                    <div class="sdk-card">
+                        <div class="sdk-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h4>OpenAPI Spec</h4>
+                        <p>Generate clients for any language</p>
+                        <a href="/api/openapi.json" class="sdk-link">Download Spec →</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="docs-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS Admin Panel</title>
+  <link rel="stylesheet" href="/admin-styles.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="admin-container">
+    <header>
+      <h1><i class="fas fa-cogs"></i> JARVIS Admin Panel</h1>
+      <nav>
+        <a href="/jarvis/chat">Chat UI</a>
+        <a href="/logs">Logs</a>
+        <a href="/docs">Docs</a>
+        <a href="#" id="refreshBtn"><i class="fas fa-sync"></i> Refresh</a>
+      </nav>
+    </header>
+    <main>
+      <section class="panel-section">
+        <h2>AI Provider & Model Selection</h2>
+        <form id="providerForm">
+          <label>Active Provider:</label>
+          <select id="activeProvider">
+            <option value="auto">Auto (Fallback)</option>
+            <option value="groq">Groq</option>
+            <option value="gemini">Google Gemini</option>
+            <option value="github">GitHub OpenAI</option>
+            <option value="openrouter">OpenRouter</option>
+          </select>
+          <label>OpenRouter Model:</label>
+          <select id="openrouterModel"></select>
+          <button type="submit"><i class="fas fa-save"></i> Save</button>
+        </form>
+      </section>
+      
+      <section class="panel-section">
+        <h2>Provider Priority Order</h2>
+        <div class="priority-help">
+          <i class="fas fa-info-circle"></i>
+          Drag to reorder providers. Higher items have priority when using "Auto (Fallback)" mode.
+        </div>
+        <div id="priorityList" class="priority-container"></div>
+        <button id="savePriority" class="btn-primary"><i class="fas fa-sort"></i> Save Priority</button>
+      </section>
+      <section class="panel-section">
+        <h2>System Status</h2>
+        <div id="statusBox">Loading...</div>
+      </section>
+      <section class="panel-section">
+        <h2>API Logs</h2>
+        <div class="logs-container" id="logsContainer">Loading logs...</div>
+      </section>
+    </main>  </div>
+  <script src="/admin.js"></script>
+</body>
+</html>

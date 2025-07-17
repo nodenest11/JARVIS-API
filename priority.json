@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "description": "AI Model Priority Configuration - Change the priority numbers to reorder which AI models are tried first",
+  "lastUpdated": "2025-07-17T12:00:00.000Z",
+  "providers": [
+    {
+      "id": "groq",
+      "name": "Groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "priority": 1,
+      "enabled": true,
+      "description": "Fastest AI model with Llama 4 Scout - high performance"
+    },
+    {
+      "id": "github",
+      "name": "GitHub OpenAI",
+      "model": "gpt-4o",
+      "priority": 2,
+      "enabled": true,
+      "description": "High quality responses with GPT-4o - very intelligent"
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "model": "moonshotai/kimi-k2:free",
+      "priority": 3,
+      "enabled": true,
+      "description": "Multiple free models available through OpenRouter"
+    },
+    {
+      "id": "gemini",
+      "name": "Google Gemini",
+      "model": "gemini-1.5-flash",
+      "priority": 4,
+      "enabled": true,
+      "description": "Google's Gemini model - good for various tasks"
+    }
+  ],
+  "settings": {
+    "noTimeoutRestrictions": true,
+    "noTokenLimits": true,
+    "allowCompleteResponse": true,
+    "notes": "All models will take as much time as needed to generate complete responses"
+  }
+}
