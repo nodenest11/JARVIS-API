@@ -24,7 +24,7 @@ echo.
 echo [4/4] Pushing to GitHub...
 set /p branch="Enter branch name (or press Enter for clean-branch): "
 if "%branch%"=="" (
-    git push origin main
+    git push origin master
 ) else (
     git push origin %branch%
 )
