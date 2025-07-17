@@ -3,16 +3,16 @@
  * Refactored for better performance, maintainability, and scalability
  */
 
-import express from 'express';
+// Load environment variables FIRST before any imports
 import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Load environment variables first
-dotenv.config();
-
 // Import configurations and utilities
-import { CONFIG, validateConfig } from './src/config/config.js';
+import { getConfig, validateConfig } from './src/config/config.js';
 import { logger } from './src/utils/logger.js';
 import { createResponse } from './src/utils/helpers.js';
 
@@ -35,7 +35,8 @@ const __dirname = path.dirname(__filename);
 class JarvisServer {
   constructor() {
     this.app = express();
-    this.port = CONFIG.SERVER.PORT;
+    this.config = getConfig(); // Use dynamic config
+    this.port = this.config.SERVER.PORT;
 
     this.validateEnvironment();
     this.setupMiddleware();
@@ -54,11 +55,11 @@ class JarvisServer {
 
   setupMiddleware() {
     // Basic middleware
-    this.app.use(express.json({ limit: CONFIG.SERVER.REQUEST_SIZE_LIMIT }));
+    this.app.use(express.json({ limit: this.config.SERVER.REQUEST_SIZE_LIMIT }));
     this.app.use(express.static('public'));
 
     // Security and logging middleware
-    if (CONFIG.SERVER.CORS_ENABLED) {
+    if (this.config.SERVER.CORS_ENABLED) {
       this.app.use(corsMiddleware);
     }
 
@@ -93,7 +94,7 @@ class JarvisServer {
       const healthData = {
         status: 'healthy',
         version: '2.0.0',
-        environment: CONFIG.SERVER.NODE_ENV,
+        environment: this.config.SERVER.NODE_ENV,
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         features: {
@@ -113,7 +114,7 @@ class JarvisServer {
         name: 'JARVIS - Professional AI API System',
         version: '2.0.0',
         description: 'Advanced multi-provider AI API with intelligent fallback',
-        baseUrl: CONFIG.SERVER.BASE_URL,
+        baseUrl: this.config.SERVER.BASE_URL,
         endpoints: {
           chat: '/api/chat',
           status: '/api/status',
@@ -143,17 +144,22 @@ class JarvisServer {
   }
 
   start() {
-    this.app.listen(this.port, '0.0.0.0', () => {
+    const host = this.config.SERVER.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
+
+    this.app.listen(this.port, host, () => {
       logger.info(`JARVIS AI API Server started successfully`, {
         port: this.port,
-        environment: CONFIG.SERVER.NODE_ENV,
-        baseUrl: CONFIG.SERVER.BASE_URL
+        host: host,
+        environment: this.config.SERVER.NODE_ENV,
+        baseUrl: this.config.SERVER.BASE_URL
       });
 
       console.log(`\n🚀 JARVIS AI API Server running on port ${this.port}`);
-      console.log(`🌐 Server URL: ${CONFIG.SERVER.BASE_URL}`);
-      console.log(`📊 Admin Panel: ${CONFIG.SERVER.BASE_URL}/jarvis`);
-      console.log(`💬 Chat Interface: ${CONFIG.SERVER.BASE_URL}/jarvis/chat`);
+      console.log(`🌐 Server URL: ${this.config.SERVER.BASE_URL}`);
+      console.log(`📊 Admin Panel: ${this.config.SERVER.BASE_URL}/jarvis`);
+      console.log(`💬 Chat Interface: ${this.config.SERVER.BASE_URL}/jarvis/chat`);
+      console.log(`🔧 Environment: ${this.config.SERVER.NODE_ENV}`);
+      console.log(`🖥️  Host: ${host}`);
     });
   }
 }
