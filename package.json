@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node index.js",
-    "prod": "node index.js",
+    "prod": "node --optimize_for_size --max_old_space_size=4096 index.js",
     "test": "node test.js"
   },
   "keywords": [
@@ -22,6 +22,7 @@
     "@azure-rest/ai-inference": "^1.0.0-beta.6",
     "@azure/core-auth": "^1.9.0",
     "@google/generative-ai": "^0.24.1",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",

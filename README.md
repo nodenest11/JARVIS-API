@@ -383,3 +383,52 @@ This project is licensed under the ISC License. See the [LICENSE](LICENSE) file 
 ⭐ Star this repository if you find it helpful!
 
 </div>
+
+## 🚀 Performance Optimizations
+
+The JARVIS API has been optimized for production performance with the following enhancements:
+
+### Server Optimizations
+
+- **Compression middleware** - Reduces response size and improves load times
+- **Lazy initialization** - Services are only initialized when needed
+- **Memory management** - Configurable memory limits and garbage collection
+- **Cluster mode** - Utilizes all available CPU cores for maximum throughput
+- **Response caching** - Frequently accessed endpoints use in-memory caching
+- **Conditional logging** - Minimal logging in production for better performance
+
+### Code Optimizations
+
+- **Efficient error handling** - Streamlined error responses with proper status codes
+- **Reduced dependencies** - Minimal external dependencies for faster startup
+- **Static file caching** - Long-lived cache headers for static assets
+- **Configuration caching** - Avoids repeated environment variable lookups
+- **Rate limiting** - In-memory rate limiting with efficient cleanup
+- **Buffer-based logging** - Reduces disk I/O by batching log writes
+
+### Deployment Tools
+
+- **PM2 ecosystem** - Optimized cluster deployment with auto-restart
+- **Deployment scripts** - Easy setup and maintenance with `deploy-setup.sh`
+- **Server optimization** - System-level optimizations with `server-fix.sh`
+- **Memory auto-scaling** - Automatically adjusts memory limits based on system resources
+
+### Production Best Practices
+
+- **Environment-specific settings** - Different configurations for development and production
+- **Security headers** - Proper CORS and security headers
+- **Graceful shutdown** - Proper handling of process termination
+- **Monitoring** - Built-in health checks and status endpoints
+
+To deploy the optimized version, use the provided deployment scripts:
+
+```bash
+# Setup the server environment
+sudo ./server-fix.sh
+
+# Deploy the application
+./deploy-setup.sh
+
+# Start the application
+./deploy-setup.sh --start
+```

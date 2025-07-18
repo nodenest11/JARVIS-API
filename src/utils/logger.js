@@ -1,199 +1,209 @@
 /**
- * Centralized logging service with mu    formatMessage(level, message, context = {}) {
-        const timestamp = new Date().toISOString();
-        const contextStr = Object.keys(context).length > 0 ? JSON.stringify(context) : '';
-
-        // Enhanced formatting for console output
-        const consoleFormat = this.formatConsoleMessage(level, message, context, timestamp);
-        
-        return {
-            timestamp,
-            level: level.toUpperCase(),
-            message,
-            context,
-            formatted: `[${timestamp}] ${level.toUpperCase()}: ${message}${contextStr ? ' ' + contextStr : ''}`,
-            console: consoleFormat
-        };
-    }
-
-    formatConsoleMessage(level, message, context, timestamp) {
-        const time = new Date(timestamp).toLocaleTimeString();
-        const color = this.colors[level] || '';
-        const reset = this.colors.reset;
-        
-        // Different formats based on log level
-        switch (level) {
-            case 'error':
-                return `${color}❌ ERROR${reset} [${time}] ${message}${context ? ' ' + JSON.stringify(context) : ''}`;
-            case 'warn':
-                return `${color}⚠️  WARN${reset} [${time}] ${message}${context ? ' ' + JSON.stringify(context) : ''}`;
-            case 'info':
-                // Only show specific info messages with better formatting
-                if (message.includes('request') || message.includes('response') || message.includes('SUCCESS') || message.includes('FAILED')) {
-                    return `${color}ℹ️  INFO${reset} [${time}] ${message}${context ? ' ' + JSON.stringify(context) : ''}`;
-                }
-                return null; // Don't show other info messages
-            case 'debug':
-                return null; // Don't show debug messages
-            default:
-                return `${color}${level.toUpperCase()}${reset} [${time}] ${message}${context ? ' ' + JSON.stringify(context) : ''}`;
-        }
-    }t formats
+ * Optimized logging system for production performance
+ * Reduces disk I/O and implements conditional logging based on environment
  */
 
 import fs from 'fs';
 import path from 'path';
-import { CONFIG } from '../config/config.js';
 
-class Logger {
-    constructor() {
-        this.logDir = CONFIG.LOGGING.LOG_DIR;
-        this.enableFileLogging = CONFIG.LOGGING.ENABLE_FILE_LOGGING;
-        this.enableConsoleLogging = CONFIG.LOGGING.ENABLE_CONSOLE_LOGGING;
-        this.logLevel = CONFIG.LOGGING.LEVEL;
+// Configuration
+const LOG_DIR = './logs';
+const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const IS_PRODUCTION = NODE_ENV === 'production';
 
-        this.levels = {
-            error: 0,
-            warn: 1,
-            info: 2,
-            debug: 3
-        };
+// Log levels with numeric values for comparison
+const LOG_LEVELS = {
+  debug: 0,
+  info: 1,
+  warn: 2,
+  error: 3
+};
 
-        this.colors = {
-            error: '\x1b[31m',
-            warn: '\x1b[33m',
-            info: '\x1b[36m',
-            debug: '\x1b[90m',
-            reset: '\x1b[0m'
-        };
-
-        this.ensureLogDirectory();
-    }
-
-    ensureLogDirectory() {
-        if (this.enableFileLogging && !fs.existsSync(this.logDir)) {
-            fs.mkdirSync(this.logDir, { recursive: true });
-        }
-    }
-
-    shouldLog(level) {
-        return this.levels[level] <= this.levels[this.logLevel];
-    }
-
-    formatMessage(level, message, context = {}) {
-        const timestamp = new Date().toISOString();
-        const contextStr = Object.keys(context).length > 0 ? JSON.stringify(context) : '';
-
-        return {
-            timestamp,
-            level: level.toUpperCase(),
-            message,
-            context,
-            formatted: `[${timestamp}] ${level.toUpperCase()}: ${message} ${contextStr}`.trim()
-        };
-    }
-
-    writeToFile(logData) {
-        if (!this.enableFileLogging) return;
-
-        try {
-            const logFile = path.join(this.logDir, `${logData.level.toLowerCase()}.log`);
-            const logEntry = JSON.stringify(logData) + '\n';
-
-            fs.appendFileSync(logFile, logEntry);
-        } catch (error) {
-            console.error('Failed to write to log file:', error.message);
-        }
-    }
-
-    writeToConsole(logData) {
-        if (!this.enableConsoleLogging) return;
-
-        // Use the new console format if available
-        const consoleMessage = logData.console;
-        if (consoleMessage) {
-            console.log(consoleMessage);
-        }
-    }
-
-    log(level, message, context = {}) {
-        if (!this.shouldLog(level)) return;
-
-        const logData = this.formatMessage(level, message, context);
-
-        this.writeToConsole(logData);
-        this.writeToFile(logData);
-    }
-
-    error(message, context = {}) {
-        this.log('error', message, context);
-    }
-
-    warn(message, context = {}) {
-        this.log('warn', message, context);
-    }
-
-    info(message, context = {}) {
-        this.log('info', message, context);
-    }
-
-    debug(message, context = {}) {
-        this.log('debug', message, context);
-    }
-
-    // Request logging with improved formatting
-    logRequest(req, res, duration) {
-        const time = new Date().toLocaleTimeString();
-        const status = res.statusCode;
-        const method = req.method;
-        const url = req.originalUrl;
-
-        let icon = '📝';
-        let color = this.colors.info;
-
-        if (status >= 500) {
-            icon = '❌';
-            color = this.colors.error;
-        } else if (status >= 400) {
-            icon = '⚠️';
-            color = this.colors.warn;
-        } else if (status >= 200) {
-            icon = '✅';
-            color = this.colors.info;
-        }
-
-        const message = `${icon} ${method} ${url} → ${status} (${duration}ms)`;
-        console.log(`${color}${message}${this.colors.reset}`);
-    }
-
-    // AI Service logging with improved formatting
-    logAIRequest(provider, model, success, duration, error = null) {
-        const time = new Date().toLocaleTimeString();
-        const icon = success ? '🤖✅' : '🤖❌';
-        const color = success ? this.colors.info : this.colors.error;
-
-        let message = `${icon} ${provider} (${model}) → ${success ? 'SUCCESS' : 'FAILED'} (${duration}ms)`;
-
-        if (error) {
-            message += ` - ${error}`;
-        }
-
-        console.log(`${color}${message}${this.colors.reset}`);
-    }
-
-    // Chat request logging
-    logChatRequest(message, provider, model, success, duration, fallback = false) {
-        const time = new Date().toLocaleTimeString();
-        const icon = success ? '💬✅' : '💬❌';
-        const color = success ? this.colors.info : this.colors.error;
-
-        const fallbackText = fallback ? ' (fallback)' : '';
-        const logMessage = `${icon} Chat Request → ${provider} (${model})${fallbackText} → ${success ? 'SUCCESS' : 'FAILED'} (${duration}ms)`;
-
-        console.log(`${color}${logMessage}${this.colors.reset}`);
-    }
+// Create log directory if it doesn't exist
+if (!fs.existsSync(LOG_DIR)) {
+  fs.mkdirSync(LOG_DIR, { recursive: true });
 }
 
-// Export singleton instance
+// In-memory log buffer to reduce disk writes
+const logBuffer = [];
+let bufferTimer = null;
+const BUFFER_FLUSH_INTERVAL = IS_PRODUCTION ? 10000 : 5000; // 10 seconds in production, 5 in dev
+const MAX_BUFFER_SIZE = IS_PRODUCTION ? 50 : 20; // More items in production before flush
+
+// Get current log level numeric value
+const currentLogLevelValue = LOG_LEVELS[LOG_LEVEL] || LOG_LEVELS.info;
+
+/**
+ * Optimized logger with conditional logging based on environment
+ */
+class Logger {
+  constructor() {
+    this.setupLogFiles();
+  }
+
+  setupLogFiles() {
+    const date = new Date().toISOString().split('T')[0];
+    this.logFile = path.join(LOG_DIR, `${date}.log`);
+    this.errorLogFile = path.join(LOG_DIR, `${date}-error.log`);
+    
+    // Rotate logs if they get too large (over 10MB)
+    this.checkLogRotation();
+  }
+  
+  checkLogRotation() {
+    try {
+      if (fs.existsSync(this.logFile)) {
+        const stats = fs.statSync(this.logFile);
+        if (stats.size > 10 * 1024 * 1024) { // 10MB
+          const timestamp = new Date().toISOString().replace(/:/g, '-');
+          fs.renameSync(this.logFile, `${this.logFile}.${timestamp}`);
+        }
+      }
+      
+      if (fs.existsSync(this.errorLogFile)) {
+        const stats = fs.statSync(this.errorLogFile);
+        if (stats.size > 10 * 1024 * 1024) { // 10MB
+          const timestamp = new Date().toISOString().replace(/:/g, '-');
+          fs.renameSync(this.errorLogFile, `${this.errorLogFile}.${timestamp}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error rotating logs:', error);
+    }
+  }
+
+  /**
+   * Log a message with level and metadata
+   */
+  log(level, message, metadata = {}) {
+    // Skip logging if level is below current log level
+    if (LOG_LEVELS[level] < currentLogLevelValue) {
+      return;
+    }
+
+    const timestamp = new Date().toISOString();
+    const logEntry = {
+      timestamp,
+      level,
+      message,
+      ...metadata,
+      env: NODE_ENV
+    };
+    
+    // Always console log errors in any environment
+    if (level === 'error') {
+      console.error(`[${timestamp}] ERROR: ${message}`, metadata);
+    } 
+    // Only console log in development
+    else if (!IS_PRODUCTION) {
+      console.log(`[${timestamp}] ${level.toUpperCase()}: ${message}`);
+    }
+
+    // Add to buffer
+    logBuffer.push(logEntry);
+    
+    // Flush buffer if it's too large or on error in production
+    if (logBuffer.length >= MAX_BUFFER_SIZE || (level === 'error' && IS_PRODUCTION)) {
+      this.flushBuffer();
+    } else if (!bufferTimer) {
+      // Set timer to flush buffer periodically
+      bufferTimer = setTimeout(() => this.flushBuffer(), BUFFER_FLUSH_INTERVAL);
+    }
+  }
+
+  /**
+   * Flush log buffer to disk
+   */
+  flushBuffer() {
+    if (bufferTimer) {
+      clearTimeout(bufferTimer);
+      bufferTimer = null;
+    }
+    
+    if (logBuffer.length === 0) return;
+    
+    try {
+      // Group logs by file
+      const regularLogs = [];
+      const errorLogs = [];
+      
+      logBuffer.forEach(entry => {
+        const logLine = JSON.stringify(entry) + '\n';
+        regularLogs.push(logLine);
+        
+        if (entry.level === 'error') {
+          errorLogs.push(logLine);
+        }
+      });
+      
+      // Write all logs to main log file
+      if (regularLogs.length > 0) {
+        fs.appendFileSync(this.logFile, regularLogs.join(''));
+      }
+      
+      // Write errors to error log file
+      if (errorLogs.length > 0) {
+        fs.appendFileSync(this.errorLogFile, errorLogs.join(''));
+      }
+      
+      // Clear buffer
+      logBuffer.length = 0;
+    } catch (error) {
+      console.error('Error writing logs to file:', error);
+    }
+  }
+
+  /**
+   * Log debug message
+   */
+  debug(message, metadata = {}) {
+    this.log('debug', message, metadata);
+  }
+
+  /**
+   * Log info message
+   */
+  info(message, metadata = {}) {
+    this.log('info', message, metadata);
+  }
+
+  /**
+   * Log warning message
+   */
+  warn(message, metadata = {}) {
+    this.log('warn', message, metadata);
+  }
+
+  /**
+   * Log error message
+   */
+  error(message, metadata = {}) {
+    this.log('error', message, metadata);
+  }
+
+  /**
+   * Log AI request (simplified in production)
+   */
+  logAIRequest(provider, model, success, duration) {
+    // Skip detailed AI request logging in production
+    if (IS_PRODUCTION) return;
+    
+    this.info(`AI Request: ${provider} (${model})`, {
+      success,
+      duration: `${duration}ms`,
+      provider,
+      model
+    });
+  }
+}
+
+// Create singleton logger instance
 export const logger = new Logger();
-export default logger;
+
+// Ensure logs are flushed before exit
+process.on('beforeExit', () => {
+  if (logBuffer.length > 0) {
+    logger.flushBuffer();
+  }
+});

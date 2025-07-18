@@ -1,10 +1,10 @@
 /**
  * Base class for all AI service providers
- * Provides common functionality and enforces consistent interface
+ * Optimized for production performance
  */
 
 import { CONFIG } from '../config/config.js';
-import { ServiceError, validateApiKey, measureTime, retryWithBackoff } from '../utils/helpers.js';
+import { ServiceError, validateApiKey, retryWithBackoff } from '../utils/helpers.js';
 import { logger } from '../utils/logger.js';
 import { getProviderModel, reloadPriorityConfig } from './priorityService.js';
 
@@ -14,25 +14,34 @@ export class BaseAIService {
         this.apiKey = process.env[providerConfig.envKey];
         this.isInitialized = false;
         this.client = null;
-
-        this.validateConfiguration();
+        this.currentModel = null;
+        
+        // Only validate in constructor, don't initialize client yet
+        this.validateApiKey();
     }
 
-    validateConfiguration() {
+    validateApiKey() {
         if (!this.apiKey) {
-            logger.warn(`API key not found for ${this.config.name}`, { envKey: this.config.envKey });
-            return;
+            if (process.env.NODE_ENV !== 'production') {
+                logger.warn(`API key not found for ${this.config.name}`, { envKey: this.config.envKey });
+            }
+            return false;
         }
 
         if (!validateApiKey(this.apiKey, this.config.keyPrefix)) {
-            logger.warn(`Invalid API key format for ${this.config.name}`, {
-                expected: this.config.keyPrefix,
-                envKey: this.config.envKey
-            });
-            return;
+            if (process.env.NODE_ENV !== 'production') {
+                logger.warn(`Invalid API key format for ${this.config.name}`, {
+                    expected: this.config.keyPrefix,
+                    envKey: this.config.envKey
+                });
+            }
+            return false;
         }
 
-        logger.info(`API key validated for ${this.config.name}`);
+        if (process.env.NODE_ENV !== 'production') {
+            logger.info(`API key validated for ${this.config.name}`);
+        }
+        return true;
     }
 
     isAvailable() {
@@ -55,11 +64,20 @@ export class BaseAIService {
 
     getCurrentModel() {
         try {
-            // Always reload to get latest model from priority.json
-            reloadPriorityConfig();
-            return getProviderModel(this.config.id);
+            // Use cached model if available
+            if (this.currentModel) {
+                return this.currentModel;
+            }
+            
+            // Only reload in development or when forced
+            if (process.env.NODE_ENV !== 'production') {
+                reloadPriorityConfig();
+            }
+            
+            this.currentModel = getProviderModel(this.config.id);
+            return this.currentModel;
         } catch (error) {
-            logger.warn(`Failed to get model from priority.json for ${this.config.id}:`, error.message);
+            logger.warn(`Failed to get model for ${this.config.id}:`, error.message);
             throw error;
         }
     }
@@ -76,7 +94,10 @@ export class BaseAIService {
 
         await this.createClient();
         this.isInitialized = true;
-        logger.info(`${this.config.name} service initialized successfully`);
+        
+        if (process.env.NODE_ENV !== 'production') {
+            logger.info(`${this.config.name} service initialized successfully`);
+        }
     }
 
     async createClient() {
@@ -100,31 +121,44 @@ export class BaseAIService {
             model: this.getCurrentModel()
         };
 
-        logger.info(`Generating response with ${this.config.name}`, {
-            model: requestOptions.model,
-            temperature,
-            maxTokens,
-            messageLength: message.length
-        });
-
-        const { result, duration } = await measureTime(() =>
-            retryWithBackoff(() => this.makeRequest(requestOptions), 3, 1000)
-        );
-
-        logger.logAIRequest(this.config.name, requestOptions.model, true, duration);
-
-        return {
-            success: true,
-            response: result.content,
-            provider: this.config.name,
-            model: requestOptions.model,
-            metadata: {
-                responseTime: duration,
-                usage: result.usage || {},
+        if (process.env.NODE_ENV !== 'production') {
+            logger.info(`Generating response with ${this.config.name}`, {
+                model: requestOptions.model,
                 temperature,
-                maxTokens
+                maxTokens,
+                messageLength: message.length
+            });
+        }
+
+        try {
+            // Use fewer retries in production for faster response
+            const maxRetries = process.env.NODE_ENV === 'production' ? 1 : 2;
+            const result = await retryWithBackoff(() => this.makeRequest(requestOptions), maxRetries, 1000);
+            const duration = result.duration || 0;
+
+            if (process.env.NODE_ENV !== 'production') {
+                logger.info(`${this.config.name} request completed`, {
+                    duration: `${duration}ms`,
+                    model: requestOptions.model
+                });
             }
-        };
+
+            return {
+                success: true,
+                response: result.content,
+                provider: this.config.name,
+                model: requestOptions.model,
+                metadata: {
+                    responseTime: duration,
+                    usage: result.usage || {},
+                    temperature,
+                    maxTokens
+                }
+            };
+        } catch (error) {
+            // Let error handler standardize the error
+            this.handleError(error);
+        }
     }
 
     async makeRequest(options) {
@@ -132,10 +166,16 @@ export class BaseAIService {
     }
 
     handleError(error) {
-        logger.error(`${this.config.name} request failed`, {
-            error: error.message,
-            provider: this.config.name
-        });
+        // Only log detailed errors in development
+        if (process.env.NODE_ENV !== 'production') {
+            logger.error(`${this.config.name} request failed`, {
+                error: error.message,
+                provider: this.config.name
+            });
+        } else {
+            // Minimal logging in production
+            logger.error(`${this.config.name} error: ${error.status || 500}`);
+        }
 
         // Standardize error messages
         if (error.message.includes('401') || error.message.includes('auth')) {

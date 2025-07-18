@@ -1,15 +1,21 @@
 /**
  * JARVIS AI API Server - Professional Multi-Provider AI Assistant
- * Refactored for better performance, maintainability, and scalability
+ * Optimized for production performance with Windows compatibility
  */
 
 // Load environment variables FIRST before any imports
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Set NODE_ENV if not set (for Windows compatibility)
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'development';
+}
+
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import compression from 'compression';
 
 // Import configurations and utilities
 import { getConfig, validateConfig } from './src/config/config.js';
@@ -35,7 +41,7 @@ const __dirname = path.dirname(__filename);
 class JarvisServer {
   constructor() {
     this.app = express();
-    this.config = getConfig(); // Use dynamic config
+    this.config = getConfig();
     this.port = this.config.SERVER.PORT;
 
     this.validateEnvironment();
@@ -46,17 +52,18 @@ class JarvisServer {
 
   validateEnvironment() {
     try {
-      // Ensure dotenv is loaded first
-      dotenv.config();
-
-      // Log environment status
-      console.log('🔧 Environment Configuration:');
-      console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`   PORT: ${process.env.PORT || '3000 (default)'}`);
-      console.log(`   BASE_URL: ${process.env.BASE_URL || 'auto-generated'}`);
-      console.log('');
-
       validateConfig();
+      
+      // Minimal logging in production
+      if (process.env.NODE_ENV === 'production') {
+        console.log(`🔧 Environment: ${process.env.NODE_ENV}, Port: ${this.port}`);
+      } else {
+        console.log('🔧 Environment Configuration:');
+        console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`   PORT: ${this.port}`);
+        console.log(`   BASE_URL: ${this.config.SERVER.BASE_URL}`);
+        console.log('');
+      }
     } catch (error) {
       logger.error('Configuration validation failed', { error: error.message });
       console.error('❌ Failed to start JARVIS API:', error.message);
@@ -65,17 +72,35 @@ class JarvisServer {
   }
 
   setupMiddleware() {
-    // Basic middleware
-    this.app.use(express.json({ limit: this.config.SERVER.REQUEST_SIZE_LIMIT }));
-    this.app.use(express.static('public'));
+    // Performance optimizations
+    this.app.use(compression()); // Add compression for all responses
+    
+    // Basic middleware - increase parse limit only if needed
+    this.app.use(express.json({ 
+      limit: this.config.SERVER.REQUEST_SIZE_LIMIT,
+      strict: true 
+    }));
+    
+    // Serve static files with cache headers
+    this.app.use(express.static('public', {
+      maxAge: '1d', // Cache static assets for 1 day
+      etag: true,
+      lastModified: true
+    }));
 
     // Security and logging middleware
     if (this.config.SERVER.CORS_ENABLED) {
       this.app.use(corsMiddleware);
     }
 
-    this.app.use(requestLogger);
-    this.app.use(rateLimiter(60000, 100)); // 100 requests per minute
+    // Only use request logger in non-production environments
+    if (process.env.NODE_ENV !== 'production') {
+      this.app.use(requestLogger);
+    }
+    
+    // More aggressive rate limiting in production
+    const requestsPerMinute = process.env.NODE_ENV === 'production' ? 60 : 100;
+    this.app.use(rateLimiter(60000, requestsPerMinute));
   }
 
   setupRoutes() {
@@ -83,59 +108,38 @@ class JarvisServer {
     this.app.use('/api', apiRoutes);
     this.app.use('/admin', adminRoutes);
 
-    // Static UI routes
-    this.app.get('/jarvis', (req, res) => {
-      res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-    });
+    // Static UI routes - simplified for production
+    const sendFile = (file) => (req, res) => {
+      res.sendFile(path.join(__dirname, 'public', file));
+    };
 
-    this.app.get('/jarvis/chat', (req, res) => {
-      res.sendFile(path.join(__dirname, 'public', 'jarvis.html'));
-    });
+    this.app.get('/jarvis', sendFile('admin.html'));
+    this.app.get('/jarvis/chat', sendFile('jarvis.html'));
+    this.app.get('/docs', sendFile('docs.html'));
+    this.app.get('/logs', sendFile('logs.html'));
 
-    this.app.get('/docs', (req, res) => {
-      res.sendFile(path.join(__dirname, 'public', 'docs.html'));
-    });
-
-    this.app.get('/logs', (req, res) => {
-      res.sendFile(path.join(__dirname, 'public', 'logs.html'));
-    });
-
-    // Health check endpoint
+    // Health check endpoint - simplified for performance
     this.app.get(['/health', '/healthy'], (req, res) => {
-      const healthData = {
-        status: 'healthy',
-        version: '2.0.0',
-        environment: this.config.SERVER.NODE_ENV,
+      res.json({
+        success: true,
         timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        features: {
-          multiProvider: true,
-          priorityFallback: true,
-          professionalUI: true,
-          comprehensiveLogging: true
+        data: {
+          status: 'healthy',
+          version: '2.0.0',
+          environment: this.config.SERVER.NODE_ENV,
+          port: this.port
         }
-      };
-
-      res.json(createResponse(true, healthData));
+      });
     });
 
-    // Root endpoint
+    // Root endpoint - simplified
     this.app.get('/', (req, res) => {
-      const apiInfo = {
+      res.json(createResponse(true, {
         name: 'JARVIS - Professional AI API System',
         version: '2.0.0',
-        description: 'Advanced multi-provider AI API with intelligent fallback',
         baseUrl: this.config.SERVER.BASE_URL,
-        endpoints: {
-          chat: '/api/chat',
-          status: '/api/status',
-          test: '/api/test',
-          admin: '/jarvis',
-          docs: '/docs'
-        }
-      };
-
-      res.json(createResponse(true, apiInfo));
+        port: this.port
+      }));
     });
   }
 
@@ -143,35 +147,38 @@ class JarvisServer {
     this.app.use(errorHandler);
 
     // Handle unhandled promise rejections
-    process.on('unhandledRejection', (reason, promise) => {
-      logger.error('Unhandled Promise Rejection', { reason, promise });
+    process.on('unhandledRejection', (reason) => {
+      logger.error('Unhandled Promise Rejection', { reason });
     });
 
     // Handle uncaught exceptions
     process.on('uncaughtException', (error) => {
-      logger.error('Uncaught Exception', { error: error.message, stack: error.stack });
-      process.exit(1);
+      logger.error('Uncaught Exception', { error: error.message });
+      // Give time for logger to write before exiting
+      setTimeout(() => process.exit(1), 1000);
     });
   }
 
   start() {
-    // make they able to host on any host publicly
     const host = '0.0.0.0';
 
     this.app.listen(this.port, host, () => {
-      logger.info(`JARVIS AI API Server started successfully`, {
+      logger.info(`JARVIS AI API Server started`, {
         port: this.port,
-        host: host,
-        environment: this.config.SERVER.NODE_ENV,
-        baseUrl: this.config.SERVER.BASE_URL
+        environment: this.config.SERVER.NODE_ENV
       });
 
-      console.log(`\n🚀 JARVIS AI API Server running on port ${this.port}`);
-      console.log(`🌐 Server URL: ${this.config.SERVER.BASE_URL}`);
-      console.log(`📊 Admin Panel: ${this.config.SERVER.BASE_URL}/jarvis`);
-      console.log(`💬 Chat Interface: ${this.config.SERVER.BASE_URL}/jarvis/chat`);
-      console.log(`🔧 Environment: ${this.config.SERVER.NODE_ENV}`);
-      console.log(`🖥️  Host: ${host}`);
+      // Minimal console output in production
+      if (process.env.NODE_ENV === 'production') {
+        console.log(`🚀 JARVIS AI API Server running on port ${this.port} (${this.config.SERVER.NODE_ENV})`);
+      } else {
+        console.log(`\n🚀 JARVIS AI API Server running on port ${this.port}`);
+        console.log(`🌐 Server URL: ${this.config.SERVER.BASE_URL}`);
+        console.log(`📊 Admin Panel: ${this.config.SERVER.BASE_URL}/jarvis`);
+        console.log(`💬 Chat Interface: ${this.config.SERVER.BASE_URL}/jarvis/chat`);
+        console.log(`🔧 Environment: ${this.config.SERVER.NODE_ENV}`);
+        console.log(`🖥️  Host: ${host}`);
+      }
     });
   }
 }
