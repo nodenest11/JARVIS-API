@@ -123,28 +123,77 @@ class AIServiceManager {
 
       } catch (error) {
         lastError = error;
-        logger.error(`Request failed with ${serviceInfo.name}`, {
+        
+        // Enhanced error logging with detailed information
+        logger.error(`❌ Request failed with ${serviceInfo.name} - Detailed Error Information`, {
           provider: serviceInfo.name,
           error: error.message,
+          attempt: attempts,
+          status: error.status,
+          stack: error.stack,
+          name: error.name,
+          cause: error.cause,
+          timestamp: new Date().toISOString(),
+          messageLength: message.length,
+          requestOptions: JSON.stringify(requestOptions, null, 2)
+        });
+
+        // Log the full error object for debugging
+        console.error(`🔍 Full error object for ${serviceInfo.name}:`, {
+          ...error,
+          stack: error.stack,
+          provider: serviceInfo.name,
           attempt: attempts
         });
 
         // Don't retry on authentication errors
         if (error.status === 401) {
+          logger.error(`❌ Authentication error with ${serviceInfo.name}, stopping retry attempts`);
           break;
         }
 
         // For 503 errors, continue to next service but log the issue
         if (error.status === 503) {
-          logger.warn(`${serviceInfo.name} temporarily unavailable (503), trying next service...`);
+          logger.warn(`⚠️ ${serviceInfo.name} temporarily unavailable (503), trying next service...`);
           continue;
         }
+
+        // For other errors, log and continue
+        logger.warn(`⚠️ ${serviceInfo.name} failed with status ${error.status || 'unknown'}, trying next service...`);
       }
     }
 
-    // All services failed
-    logger.error(`All AI services failed after ${attempts} attempts`, {
-      lastError: lastError?.message
+    // All services failed - provide comprehensive error information
+    logger.error(`❌ All AI services failed after ${attempts} attempts - Comprehensive Error Report`, {
+      totalAttempts: attempts,
+      availableServices: availableServices.length,
+      lastError: lastError?.message,
+      lastErrorStatus: lastError?.status,
+      lastErrorStack: lastError?.stack,
+      lastErrorName: lastError?.name,
+      servicesTried: availableServices.map(s => s.name),
+      timestamp: new Date().toISOString(),
+      messageLength: message.length,
+      requestOptions: JSON.stringify(requestOptions, null, 2)
+    });
+
+    // Log the complete error context
+    console.error('🔍 Complete failure context:', {
+      attempts,
+      lastError: lastError ? {
+        message: lastError.message,
+        status: lastError.status,
+        stack: lastError.stack,
+        name: lastError.name,
+        cause: lastError.cause
+      } : null,
+      availableServices: availableServices.map(s => ({
+        id: s.id,
+        name: s.name,
+        hasApiKey: s.hasApiKey
+      })),
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
     });
 
     // Better error message for 503 errors
@@ -158,8 +207,8 @@ class AIServiceManager {
 
     throw new ServiceError(
       `All AI services failed. Last error: ${lastError?.message || 'Unknown error'}`,
-      null,
-      500
+      lastError,
+      lastError?.status || 500
     );
   }
 
