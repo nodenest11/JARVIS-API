@@ -22,7 +22,7 @@ class AIServiceManager {
       openrouter: OpenRouterService,
       gemini: GeminiService
     };
-    
+
     // Cache for available services (refreshed every 30 seconds)
     this.availableServicesCache = null;
     this.availableServicesCacheTime = 0;
@@ -64,7 +64,7 @@ class AIServiceManager {
       }
       
       return service;
-    } catch (error) {
+      } catch (error) {
       logger.error(`Failed to initialize service: ${serviceId}`, { error: error.message });
       throw error;
     }
@@ -89,17 +89,17 @@ class AIServiceManager {
           
           // Create temporary instance to check API key without full initialization
           const tempService = new ServiceClass();
-          
-          const config = CONFIG.PROVIDERS[serviceId.toUpperCase()];
-          if (!config) return null;
 
-          return {
-            id: serviceId,
-            name: config.name,
-            description: config.description,
+        const config = CONFIG.PROVIDERS[serviceId.toUpperCase()];
+        if (!config) return null;
+
+        return {
+          id: serviceId,
+          name: config.name,
+          description: config.description,
             hasApiKey: tempService.hasApiKey(),
-            priority: priorityOrder.indexOf(serviceId) + 1
-          };
+          priority: priorityOrder.indexOf(serviceId) + 1
+        };
         } catch (error) {
           logger.warn(`Error checking service ${serviceId}`, { error: error.message });
           return null;
@@ -125,11 +125,11 @@ class AIServiceManager {
     
     // Only log in non-production
     if (process.env.NODE_ENV !== 'production') {
-      logger.info(`Starting AI request with ${availableServices.length} available services`, {
-        noTimeoutRestrictions: settings.noTimeoutRestrictions,
-        noTokenLimits: settings.noTokenLimits,
-        allowCompleteResponse: settings.allowCompleteResponse
-      });
+    logger.info(`Starting AI request with ${availableServices.length} available services`, {
+      noTimeoutRestrictions: settings.noTimeoutRestrictions,
+      noTokenLimits: settings.noTokenLimits,
+      allowCompleteResponse: settings.allowCompleteResponse
+    });
     }
 
     // Remove all restrictions for complete responses
@@ -147,14 +147,14 @@ class AIServiceManager {
     // Try each service in priority order
     for (const serviceInfo of availableServices) {
       attempts++;
-      
+
       try {
         // Get or initialize the service
         const service = await this.getService(serviceInfo.id);
         
         // Only log in non-production
         if (process.env.NODE_ENV !== 'production') {
-          logger.info(`Attempting request with ${serviceInfo.name} (attempt ${attempts})`);
+        logger.info(`Attempting request with ${serviceInfo.name} (attempt ${attempts})`);
         }
 
         const startTime = Date.now();
@@ -163,12 +163,12 @@ class AIServiceManager {
 
         // Only log in non-production
         if (process.env.NODE_ENV !== 'production') {
-          logger.info(`Request successful with ${serviceInfo.name}`, {
-            provider: serviceInfo.name,
-            duration: `${duration}ms`,
-            attempts,
-            tokenCount: result.metadata?.usage?.totalTokens || 'unlimited'
-          });
+        logger.info(`Request successful with ${serviceInfo.name}`, {
+          provider: serviceInfo.name,
+          duration: `${duration}ms`,
+          attempts,
+          tokenCount: result.metadata?.usage?.totalTokens || 'unlimited'
+        });
         }
 
         return {
@@ -228,12 +228,12 @@ class AIServiceManager {
   async testService(serviceId) {
     try {
       const service = await this.getService(serviceId);
-      
-      if (!service.isAvailable()) {
-        throw new ServiceError(`Service ${serviceId} is not available`);
-      }
 
-      const testMessage = "Hello, this is a test message. Please respond with a brief greeting.";
+    if (!service.isAvailable()) {
+      throw new ServiceError(`Service ${serviceId} is not available`);
+    }
+
+    const testMessage = "Hello, this is a test message. Please respond with a brief greeting.";
       const startTime = Date.now();
       const result = await service.generateResponse(testMessage, { maxTokens: 50 });
       const duration = Date.now() - startTime;

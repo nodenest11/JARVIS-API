@@ -43,83 +43,83 @@ export const getConfig = () => {
 
     // Create new config
     configCache = {
-        // Server Configuration
-        SERVER: {
+    // Server Configuration
+    SERVER: {
             PORT: port,
-            NODE_ENV: process.env.NODE_ENV || 'development',
-            BASE_URL: buildBaseUrl(),
+        NODE_ENV: process.env.NODE_ENV || 'development',
+        BASE_URL: buildBaseUrl(),
             REQUEST_SIZE_LIMIT: '5mb', // Reduced for better performance
-            CORS_ENABLED: true
-        },
+        CORS_ENABLED: true
+    },
 
-        // AI Service Configuration
-        AI: {
-            DEFAULT_TEMPERATURE: 0.7,
-            DEFAULT_MAX_TOKENS: 1000,
-            MIN_TEMPERATURE: 0.0,
-            MAX_TEMPERATURE: 2.0,
-            MIN_TOKENS: 1,
-            MAX_TOKENS: 4000,
-            REQUEST_TIMEOUT: 30000,
+    // AI Service Configuration
+    AI: {
+        DEFAULT_TEMPERATURE: 0.7,
+        DEFAULT_MAX_TOKENS: 1000,
+        MIN_TEMPERATURE: 0.0,
+        MAX_TEMPERATURE: 2.0,
+        MIN_TOKENS: 1,
+        MAX_TOKENS: 4000,
+        REQUEST_TIMEOUT: 30000,
             MAX_RETRIES: process.env.NODE_ENV === 'production' ? 1 : 2, // Fewer retries in production
-            SYSTEM_PROMPT: "You are JARVIS, a professional AI assistant. Provide direct, helpful, and accurate responses."
-        },
+        SYSTEM_PROMPT: "You are JARVIS, a professional AI assistant. Provide direct, helpful, and accurate responses."
+    },
 
-        // Provider Configuration
-        PROVIDERS: {
-            GROQ: {
-                id: 'groq',
-                name: 'Groq',
-                baseURL: 'https://api.groq.com/openai/v1',
-                timeout: 25000,
-                envKey: 'GROQ_API_KEY',
-                keyPrefix: 'gsk_'
-            },
-            GITHUB: {
-                id: 'github',
-                name: 'GitHub OpenAI',
-                baseURL: 'https://models.inference.ai.azure.com',
-                timeout: 45000,
-                envKey: 'GITHUB_TOKEN',
-                keyPrefix: 'github_pat_'
-            },
-            OPENROUTER: {
-                id: 'openrouter',
-                name: 'OpenRouter',
-                baseURL: 'https://openrouter.ai/api/v1',
-                timeout: 30000,
-                envKey: 'OPENROUTER_API_KEY',
-                keyPrefix: 'sk-or-v1-'
-            },
-            GEMINI: {
-                id: 'gemini',
-                name: 'Google Gemini',
-                baseURL: 'https://generativelanguage.googleapis.com/v1beta',
-                timeout: 20000,
-                envKey: 'GEMINI_API_KEY',
-                keyPrefix: 'AIzaSy'
-            }
+    // Provider Configuration
+    PROVIDERS: {
+        GROQ: {
+            id: 'groq',
+            name: 'Groq',
+            baseURL: 'https://api.groq.com/openai/v1',
+            timeout: 25000,
+            envKey: 'GROQ_API_KEY',
+            keyPrefix: 'gsk_'
         },
+        GITHUB: {
+            id: 'github',
+            name: 'GitHub OpenAI',
+            baseURL: 'https://models.inference.ai.azure.com',
+            timeout: 45000,
+            envKey: 'GITHUB_TOKEN',
+            keyPrefix: 'github_pat_'
+        },
+        OPENROUTER: {
+            id: 'openrouter',
+            name: 'OpenRouter',
+            baseURL: 'https://openrouter.ai/api/v1',
+            timeout: 30000,
+            envKey: 'OPENROUTER_API_KEY',
+            keyPrefix: 'sk-or-v1-'
+        },
+        GEMINI: {
+            id: 'gemini',
+            name: 'Google Gemini',
+            baseURL: 'https://generativelanguage.googleapis.com/v1beta',
+            timeout: 20000,
+            envKey: 'GEMINI_API_KEY',
+            keyPrefix: 'AIzaSy'
+        }
+    },
 
         // Logging Configuration - Optimized for production
-        LOGGING: {
+    LOGGING: {
             LEVEL: process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'warn' : 'info'),
-            ENABLE_FILE_LOGGING: true,
-            LOG_DIR: './logs',
-            MAX_LOG_SIZE: '10mb',
+        ENABLE_FILE_LOGGING: true,
+        LOG_DIR: './logs',
+        MAX_LOG_SIZE: '10mb',
             MAX_LOG_FILES: 5, // Reduced from 10
             ENABLE_CONSOLE_LOGGING: process.env.NODE_ENV !== 'production'
-        },
+    },
 
-        // API Endpoints
-        ENDPOINTS: {
-            CHAT: '/api/chat',
-            STATUS: '/api/status',
-            TEST: '/api/test',
-            HEALTH: '/health',
-            ADMIN: '/admin',
-            DOCS: '/docs'
-        }
+    // API Endpoints
+    ENDPOINTS: {
+        CHAT: '/api/chat',
+        STATUS: '/api/status',
+        TEST: '/api/test',
+        HEALTH: '/health',
+        ADMIN: '/admin',
+        DOCS: '/docs'
+    }
     };
 
     return configCache;
@@ -159,12 +159,12 @@ export function validateConfig() {
 
     // Validate API keys format - only in development
     if (!isProd) {
-        Object.values(config.PROVIDERS).forEach(provider => {
-            const apiKey = process.env[provider.envKey];
-            if (apiKey && !apiKey.startsWith(provider.keyPrefix)) {
-                errors.push(`${provider.envKey} should start with "${provider.keyPrefix}"`);
-            }
-        });
+    Object.values(config.PROVIDERS).forEach(provider => {
+        const apiKey = process.env[provider.envKey];
+        if (apiKey && !apiKey.startsWith(provider.keyPrefix)) {
+            errors.push(`${provider.envKey} should start with "${provider.keyPrefix}"`);
+        }
+    });
     }
 
     if (errors.length > 0) {
@@ -173,7 +173,7 @@ export function validateConfig() {
 
     // Only log in development
     if (!isProd) {
-        console.log('✅ Configuration validated successfully');
+    console.log('✅ Configuration validated successfully');
     }
 }
 

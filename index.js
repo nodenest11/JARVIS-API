@@ -53,16 +53,16 @@ class JarvisServer {
   validateEnvironment() {
     try {
       validateConfig();
-      
+
       // Minimal logging in production
       if (process.env.NODE_ENV === 'production') {
         console.log(`🔧 Environment: ${process.env.NODE_ENV}, Port: ${this.port}`);
       } else {
-        console.log('🔧 Environment Configuration:');
-        console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+      console.log('🔧 Environment Configuration:');
+      console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
         console.log(`   PORT: ${this.port}`);
         console.log(`   BASE_URL: ${this.config.SERVER.BASE_URL}`);
-        console.log('');
+      console.log('');
       }
     } catch (error) {
       logger.error('Configuration validation failed', { error: error.message });
@@ -95,7 +95,7 @@ class JarvisServer {
 
     // Only use request logger in non-production environments
     if (process.env.NODE_ENV !== 'production') {
-      this.app.use(requestLogger);
+    this.app.use(requestLogger);
     }
     
     // More aggressive rate limiting in production
@@ -124,9 +124,9 @@ class JarvisServer {
         success: true,
         timestamp: new Date().toISOString(),
         data: {
-          status: 'healthy',
-          version: '2.0.0',
-          environment: this.config.SERVER.NODE_ENV,
+        status: 'healthy',
+        version: '2.0.0',
+        environment: this.config.SERVER.NODE_ENV,
           port: this.port
         }
       });
@@ -172,12 +172,12 @@ class JarvisServer {
       if (process.env.NODE_ENV === 'production') {
         console.log(`🚀 JARVIS AI API Server running on port ${this.port} (${this.config.SERVER.NODE_ENV})`);
       } else {
-        console.log(`\n🚀 JARVIS AI API Server running on port ${this.port}`);
-        console.log(`🌐 Server URL: ${this.config.SERVER.BASE_URL}`);
-        console.log(`📊 Admin Panel: ${this.config.SERVER.BASE_URL}/jarvis`);
-        console.log(`💬 Chat Interface: ${this.config.SERVER.BASE_URL}/jarvis/chat`);
-        console.log(`🔧 Environment: ${this.config.SERVER.NODE_ENV}`);
-        console.log(`🖥️  Host: ${host}`);
+      console.log(`\n🚀 JARVIS AI API Server running on port ${this.port}`);
+      console.log(`🌐 Server URL: ${this.config.SERVER.BASE_URL}`);
+      console.log(`📊 Admin Panel: ${this.config.SERVER.BASE_URL}/jarvis`);
+      console.log(`💬 Chat Interface: ${this.config.SERVER.BASE_URL}/jarvis/chat`);
+      console.log(`🔧 Environment: ${this.config.SERVER.NODE_ENV}`);
+      console.log(`🖥️  Host: ${host}`);
       }
     });
   }

@@ -27,10 +27,10 @@ router.post('/chat', chatRequestValidator, async (req, res) => {
   // Only log minimal info in production
   const isProd = process.env.NODE_ENV === 'production';
   if (!isProd) {
-    logger.info('Chat request received', {
-      messageLength: message.length,
-      autoMode: true
-    });
+  logger.info('Chat request received', {
+    messageLength: message.length,
+    autoMode: true
+  });
   }
 
   try {
@@ -39,12 +39,12 @@ router.post('/chat', chatRequestValidator, async (req, res) => {
     const duration = Date.now() - startTime;
 
     if (!isProd) {
-      logger.info('Chat request completed successfully', {
-        provider: result.provider,
-        model: result.model,
-        duration: `${duration}ms`,
+    logger.info('Chat request completed successfully', {
+      provider: result.provider,
+      model: result.model,
+      duration: `${duration}ms`,
         fallbackUsed: result.fallbackUsed
-      });
+    });
     }
 
     const response = createResponse(true, {
@@ -72,13 +72,13 @@ router.post('/chat', chatRequestValidator, async (req, res) => {
     // Map common error codes to friendly messages
     switch (statusCode) {
       case 503:
-        errorMessage = 'AI services are temporarily unavailable due to high demand. Please try again in a few moments.';
+      errorMessage = 'AI services are temporarily unavailable due to high demand. Please try again in a few moments.';
         break;
       case 401:
-        errorMessage = 'Authentication error. Please check API configuration.';
+      errorMessage = 'Authentication error. Please check API configuration.';
         break;
       case 429:
-        errorMessage = 'Rate limit exceeded. Please wait a moment before trying again.';
+      errorMessage = 'Rate limit exceeded. Please wait a moment before trying again.';
         break;
     }
 
@@ -106,14 +106,14 @@ router.get('/status', (req, res) => {
     }
     
     const status = aiManager.getServiceStatus();
-    
+
     const response = createResponse(true, {
       status: 'operational',
       ...status,
       environment: process.env.NODE_ENV || 'development',
       timestamp: new Date().toISOString()
     });
-    
+
     // Update cache
     statusCache = response;
     statusCacheTime = now;
