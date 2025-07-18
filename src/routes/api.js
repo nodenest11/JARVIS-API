@@ -50,23 +50,7 @@ router.post('/chat', chatRequestValidator, async (req, res) => {
     res.json(response);
 
   } catch (error) {
-    // Enhanced error logging with full details
-    logger.error('❌ Chat request failed with detailed error information', {
-      error: error.message,
-      stack: error.stack,
-      name: error.name,
-      status: error.status,
-      cause: error.cause,
-      provider: error.provider,
-      requestMessage: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
-      timestamp: new Date().toISOString()
-    });
-
-    // Log the full error object for debugging
-    console.error('🔍 Full error object:', {
-      ...error,
-      stack: error.stack
-    });
+    logger.error('Chat request failed', { error: error.message });
 
     let errorMessage = 'AI service temporarily unavailable. Please try again.';
 
@@ -81,12 +65,7 @@ router.post('/chat', chatRequestValidator, async (req, res) => {
     const response = createResponse(false, null, {
       message: errorMessage,
       details: error.message,
-      status: error.status || 500,
-      debugInfo: process.env.NODE_ENV === 'development' ? {
-        stack: error.stack,
-        provider: error.provider,
-        timestamp: new Date().toISOString()
-      } : undefined
+      status: error.status || 500
     });
 
     res.status(error.status || 500).json(response);
@@ -115,25 +94,11 @@ router.get('/status', (req, res) => {
     res.json(response);
 
   } catch (error) {
-    logger.error('❌ Status check failed with detailed error information', {
-      error: error.message,
-      stack: error.stack,
-      name: error.name,
-      timestamp: new Date().toISOString()
-    });
-
-    console.error('🔍 Status check error details:', {
-      ...error,
-      stack: error.stack
-    });
+    logger.error('Status check failed', { error: error.message });
 
     const response = createResponse(false, null, {
       message: 'Unable to retrieve service status',
-      details: error.message,
-      debugInfo: process.env.NODE_ENV === 'development' ? {
-        stack: error.stack,
-        timestamp: new Date().toISOString()
-      } : undefined
+      details: error.message
     });
 
     res.status(500).json(response);

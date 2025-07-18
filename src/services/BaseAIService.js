@@ -132,43 +132,13 @@ export class BaseAIService {
     }
 
     handleError(error) {
-        // Enhanced error logging with comprehensive details
-        logger.error(`❌ ${this.config.name} request failed - Comprehensive Error Details`, {
+        logger.error(`${this.config.name} request failed`, {
             error: error.message,
-            provider: this.config.name,
-            providerId: this.config.id,
-            status: error.status || error.code,
-            stack: error.stack,
-            name: error.name,
-            cause: error.cause,
-            response: error.response ? {
-                status: error.response.status,
-                statusText: error.response.statusText,
-                data: error.response.data
-            } : null,
-            timestamp: new Date().toISOString(),
-            apiKeyStatus: this.hasApiKey() ? 'present' : 'missing',
-            initialized: this.isInitialized
+            provider: this.config.name
         });
 
-        // Log the full error object for debugging
-        console.error(`🔍 Full error object for ${this.config.name}:`, {
-            ...error,
-            stack: error.stack,
-            response: error.response,
-            provider: this.config.name,
-            timestamp: new Date().toISOString()
-        });
-
-        // Extract status code from various error formats
-        const statusCode = error.status || error.code || 
-                          (error.response && error.response.status) || 
-                          (error.message.includes('401') ? 401 : 
-                           error.message.includes('429') ? 429 : 
-                           error.message.includes('503') ? 503 : 500);
-
-        // Standardize error messages based on status codes and content
-        if (statusCode === 401 || error.message.includes('401') || error.message.includes('auth')) {
+        // Standardize error messages
+        if (error.message.includes('401') || error.message.includes('auth')) {
             throw new ServiceError(
                 `Authentication failed for ${this.config.name}. Please check your API key.`,
                 this.config.id,
@@ -176,7 +146,7 @@ export class BaseAIService {
             );
         }
 
-        if (statusCode === 429 || error.message.includes('429') || error.message.includes('rate limit')) {
+        if (error.message.includes('429') || error.message.includes('rate limit')) {
             throw new ServiceError(
                 `Rate limit exceeded for ${this.config.name}. Please try again later.`,
                 this.config.id,
@@ -184,7 +154,7 @@ export class BaseAIService {
             );
         }
 
-        if (statusCode === 503 || error.message.includes('503') || error.message.includes('service unavailable')) {
+        if (error.message.includes('503') || error.message.includes('service unavailable')) {
             throw new ServiceError(
                 `${this.config.name} service is temporarily unavailable. Please try again in a few moments.`,
                 this.config.id,
@@ -192,7 +162,7 @@ export class BaseAIService {
             );
         }
 
-        if (statusCode === 408 || error.message.includes('timeout')) {
+        if (error.message.includes('timeout')) {
             throw new ServiceError(
                 `Request timeout for ${this.config.name}. Please try again.`,
                 this.config.id,
@@ -200,11 +170,10 @@ export class BaseAIService {
             );
         }
 
-        // Generic error with enhanced details
         throw new ServiceError(
             `${this.config.name} request failed: ${error.message}`,
             this.config.id,
-            statusCode
+            500
         );
     }
 }

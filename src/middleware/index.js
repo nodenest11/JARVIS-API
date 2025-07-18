@@ -31,112 +31,53 @@ export const chatRequestValidator = (req, res, next) => {
 };
 
 /**
- * Request logging middleware for debugging and monitoring
+ * Request logging middleware
  */
 export const requestLogger = (req, res, next) => {
-  const start = Date.now();
-  
-  // Log incoming request details
-  logger.info(`📥 ${req.method} ${req.path} - Request received`, {
-    method: req.method,
-    path: req.path,
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
-    contentType: req.get('Content-Type'),
-    bodySize: req.body ? JSON.stringify(req.body).length : 0,
-    hasBody: !!req.body,
-    timestamp: new Date().toISOString()
-  });
+  const startTime = Date.now();
 
-  // Log request body for debugging (truncate if too long)
-  if (req.body && Object.keys(req.body).length > 0) {
-    const bodyStr = JSON.stringify(req.body);
-    logger.info(`📝 Request body preview`, {
-      bodyPreview: bodyStr.length > 200 ? bodyStr.substring(0, 200) + '...' : bodyStr,
-      fullBodyLength: bodyStr.length
-    });
-  }
-
-  // Override res.json to log response
-  const originalJson = res.json;
-  res.json = function(data) {
-    const duration = Date.now() - start;
-    const statusCode = res.statusCode;
-    
-    logger.info(`📤 ${req.method} ${req.path} → ${statusCode} (${duration}ms)`, {
-      method: req.method,
-      path: req.path,
-      statusCode,
-      duration: `${duration}ms`,
-      responseSize: JSON.stringify(data).length,
-      success: statusCode < 400,
-      timestamp: new Date().toISOString()
-    });
-
-    // Log response details for errors
-    if (statusCode >= 400) {
-      logger.error(`❌ Error response details`, {
-        statusCode,
-        method: req.method,
-        path: req.path,
-        duration: `${duration}ms`,
-        responseData: data,
-        timestamp: new Date().toISOString()
-      });
-    }
-
-    return originalJson.call(this, data);
+  // Capture response
+  const originalSend = res.send;
+  res.send = function (data) {
+    const duration = Date.now() - startTime;
+    logger.logRequest(req, res, duration);
+    return originalSend.call(this, data);
   };
 
   next();
 };
 
 /**
- * CORS middleware for handling cross-origin requests
+ * CORS middleware
  */
 export const corsMiddleware = (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
+
   if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
+    return res.sendStatus(200);
   }
+
+  next();
 };
 
 /**
- * Global error handler middleware
+ * Global error handler
  */
 export const errorHandler = (error, req, res, next) => {
-  logger.error(`❌ Unhandled error in ${req.method} ${req.path}`, {
+  logger.error('Unhandled error', {
     error: error.message,
     stack: error.stack,
-    method: req.method,
-    path: req.path,
-    body: req.body,
-    timestamp: new Date().toISOString()
+    url: req.originalUrl,
+    method: req.method
   });
 
-  console.error('🔍 Full unhandled error details:', {
-    ...error,
-    stack: error.stack,
-    method: req.method,
-    path: req.path,
-    timestamp: new Date().toISOString()
-  });
+  const sanitizedError = sanitizeError(error, CONFIG.SERVER.NODE_ENV === 'development');
+  const response = createResponse(false, null, sanitizedError);
 
-  const response = createResponse(false, null, {
-    message: 'Internal server error occurred',
-    details: process.env.NODE_ENV === 'development' ? error.message : 'Please try again later',
-    debugInfo: process.env.NODE_ENV === 'development' ? {
-      stack: error.stack,
-      timestamp: new Date().toISOString()
-    } : undefined
-  });
-
-  res.status(500).json(response);
+  const statusCode = error.status || 500;
+  res.status(statusCode).json(response);
 };
 
 /**
