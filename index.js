@@ -155,7 +155,8 @@ class JarvisServer {
   }
 
   start() {
-    const host = this.config.SERVER.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
+    // make they able to host on any host publicly
+    const host = '0.0.0.0';
 
     this.app.listen(this.port, host, () => {
       logger.info(`JARVIS AI API Server started successfully`, {
