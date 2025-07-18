@@ -3,686 +3,1806 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARVIS AI API - Documentation</title>
-    <link rel="stylesheet" href="/docs-styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>JARVIS AI - API Documentation</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: #f1f5f9;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .docs-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 23, 42, 0.8);
+            border-right: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            padding: 24px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 24px 24px 24px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #f1f5f9;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-version {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            color: #94a3b8;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 24px;
+            margin-bottom: 12px;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 2px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 10px 24px;
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-links a:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .nav-links a.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-left-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .nav-links a .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 0;
+        }
+
+        .docs-header {
+            background: rgba(30, 41, 59, 0.4);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 24px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .docs-header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .docs-header p {
+            color: #94a3b8;
+            font-size: 1.1em;
+            font-weight: 400;
+        }
+
+        .docs-container {
+            padding: 40px;
+            max-width: 1000px;
+        }
+
+        .content-section {
+            margin-bottom: 48px;
+        }
+
+        .content-section h2 {
+            color: #f1f5f9;
+            font-size: 2em;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .content-section h3 {
+            color: #3b82f6;
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            margin-top: 32px;
+        }
+
+        .content-section h4 {
+            color: #8b5cf6;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            margin-top: 24px;
+        }
+
+        .content-section p {
+            color: #e2e8f0;
+            margin-bottom: 16px;
+            font-size: 1em;
+            line-height: 1.7;
+        }
+
+        .content-section ul {
+            color: #e2e8f0;
+            margin-bottom: 16px;
+            padding-left: 20px;
+        }
+
+        .content-section li {
+            margin-bottom: 8px;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-block::before {
+            content: attr(data-language);
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: #94a3b8;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .code-block pre {
+            color: #f8fafc;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        /* Inline Code */
+        .inline-code {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h4 {
+            color: #3b82f6;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        /* Endpoint Cards */
+        .endpoint-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            margin: 24px 0;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .endpoint-header {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .method-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .method-post {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .method-get {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .endpoint-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .endpoint-body {
+            padding: 24px;
+        }
+
+        .endpoint-description {
+            color: #e2e8f0;
+            margin-bottom: 20px;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        /* Response Examples */
+        .response-example {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .response-example h5 {
+            color: #10b981;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .status-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Provider Cards */
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 24px 0;
+        }
+
+        .provider-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+        }
+
+        .provider-card h4 {
+            color: #3b82f6;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .provider-card p {
+            color: #e2e8f0;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .provider-models {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .provider-models h5 {
+            color: #94a3b8;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .provider-models ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .provider-models li {
+            color: #e2e8f0;
+            font-size: 0.9em;
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .provider-models li::before {
+            content: '•';
+            color: #3b82f6;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .docs-container {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .docs-header {
+                padding: 16px 24px;
+            }
+            
+            .docs-header h1 {
+                font-size: 2em;
+            }
+            
+            .docs-container {
+                padding: 16px;
+            }
+            
+            .provider-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
+
+        .code-block .language-label {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .endpoint-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .method-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .method-post {
+            background: #28a745;
+            color: white;
+        }
+
+        .method-get {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .endpoint-url {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.1em;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .parameter-table th,
+        .parameter-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .parameter-table th {
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        .parameter-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .required {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .optional {
+            color: #95a5a6;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            color: #00d4ff;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning-box h4 {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .info-box h4 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .provider-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .provider-name {
+            color: #00d4ff;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .provider-model {
+            color: #cccccc;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .provider-desc {
+            color: #999;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .toc {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 250px;
+            z-index: 1000;
+        }
+
+        .toc h3 {
+            color: #00d4ff;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin-bottom: 5px;
+        }
+
+        .toc a {
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: #00d4ff;
+        }
+
+        @media (max-width: 768px) {
+            .toc {
+                position: static;
+                max-width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .nav ul {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .provider-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Navigation -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
         <nav class="sidebar">
-            <div class="nav-header">
-                <div class="logo">
-                    <i class="fas fa-robot"></i>
-                    <h2>JARVIS API Docs</h2>
-                </div>
-                <div class="version-badge">v2.0.0</div>
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">
+                    🤖 JARVIS AI
+                </a>
+                <div class="sidebar-version">v2.0.0</div>
             </div>
             
-            <div class="nav-links">
-                <a href="#overview" class="nav-link active">
-                    <i class="fas fa-home"></i>
-                    Overview
-                </a>
-                <a href="#getting-started" class="nav-link">
-                    <i class="fas fa-rocket"></i>
-                    Getting Started
-                </a>
-                <a href="#authentication" class="nav-link">
-                    <i class="fas fa-key"></i>
-                    Authentication
-                </a>
-                <a href="#endpoints" class="nav-link">
-                    <i class="fas fa-plug"></i>
-                    API Endpoints
-                </a>
-                <a href="#fallback-system" class="nav-link">
-                    <i class="fas fa-shield-alt"></i>
-                    Fallback System
-                </a>
-                <a href="#examples" class="nav-link">
-                    <i class="fas fa-code"></i>
-                    Code Examples
-                </a>
-                <a href="#error-handling" class="nav-link">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Error Handling
-                </a>
-                <a href="#rate-limits" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Rate Limits
-                </a>
-                <a href="#sdks" class="nav-link">
-                    <i class="fas fa-cube"></i>
-                    SDKs & Tools
-                </a>
+            <div class="nav-section">
+                <div class="nav-section-title">Getting Started</div>
+                <ul class="nav-links">
+                    <li><a href="#overview" class="active">🎯 Overview</a></li>
+                    <li><a href="#quick-start">🚀 Quick Start</a></li>
+                    <li><a href="#authentication">🔐 Authentication</a></li>
+                    <li><a href="#providers">⚡ AI Providers</a></li>
+                </ul>
             </div>
             
-            <div class="nav-footer">
-                <a href="/jarvis" class="jarvis-link">
-                    <i class="fas fa-comments"></i>
-                    Try JARVIS UI
-                </a>
-                <a href="/health" class="status-link">
-                    <i class="fas fa-heartbeat"></i>
-                    API Status
-                </a>
+            <div class="nav-section">
+                <div class="nav-section-title">API Reference</div>
+                <ul class="nav-links">
+                    <li><a href="#chat-endpoint">💬 Chat Endpoint</a></li>
+                    <li><a href="#admin-endpoint">⚙️ Admin Endpoint</a></li>
+                    <li><a href="#status-endpoint">📊 Status Endpoint</a></li>
+                    <li><a href="#health-endpoint">❤️ Health Check</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Advanced</div>
+                <ul class="nav-links">
+                    <li><a href="#error-handling">🚨 Error Handling</a></li>
+                    <li><a href="#rate-limiting">⏱️ Rate Limiting</a></li>
+                    <li><a href="#deployment">🚀 Deployment</a></li>
+                    <li><a href="#examples">📖 Examples</a></li>
+                </ul>
             </div>
         </nav>
 
         <!-- Main Content -->
-        <main class="content">
-            <!-- Overview Section -->
-            <section id="overview" class="doc-section">
-                <div class="section-header">
-                    <h1>Professional AI API with Multi-Provider Fallback</h1>
-                    <p class="lead">A robust AI API server with automatic fallback system supporting multiple AI providers with priority-based routing.</p>
-                </div>
-
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h3>Automatic Fallback</h3>
-                        <p>Seamless switching between AI providers when one service fails</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-layer-group"></i>
-                        </div>
-                        <h3>Multi-Provider</h3>
-                        <p>Google Gemini, GitHub OpenAI, and OpenRouter integration</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-sort-numeric-down"></i>
-                        </div>
-                        <h3>Priority-Based</h3>
-                        <p>Intelligent routing based on service priority and availability</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-code"></i>
-                        </div>
-                        <h3>Unified Interface</h3>
-                        <p>Single endpoint for all providers with consistent responses</p>
-                    </div>
-                </div>
-
-                <div class="priority-system">
-                    <h3>Service Priority Order</h3>
-                    <div class="priority-list">
-                        <div class="priority-item priority-1">
-                            <span class="priority-number">1</span>
-                            <div class="priority-info">
-                                <strong>Google Gemini</strong>
-                                <span>gemini-1.5-flash - Primary service</span>
-                            </div>
-                        </div>
-                        <div class="priority-item priority-2">
-                            <span class="priority-number">2</span>
-                            <div class="priority-info">
-                                <strong>GitHub OpenAI</strong>
-                                <span>openai/gpt-4.1 - Secondary fallback</span>
-                            </div>
-                        </div>
-                        <div class="priority-item priority-3">
-                            <span class="priority-number">3</span>
-                            <div class="priority-info">
-                                <strong>OpenRouter</strong>
-                                <span>mistralai/mistral-7b-instruct - Tertiary fallback</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Getting Started Section -->
-            <section id="getting-started" class="doc-section">
-                <h2>Getting Started</h2>
-                
-                <div class="step-guide">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>Install Dependencies</h4>
-                            <pre><code class="language-bash">npm install</code></pre>
-                        </div>
-                    </div>
+        <main class="main-content">
+            <div class="docs-header">
+                <h1>📚 JARVIS AI Documentation</h1>
+                <p>Complete API reference and usage guide for the advanced AI system</p>
+            </div>
+            
+            <div class="docs-container">
+                <!-- Overview Section -->
+                <section id="overview" class="content-section">
+                    <h2>🎯 Overview</h2>
+                    <p>JARVIS AI is a sophisticated multi-provider AI system that intelligently routes requests to the best available AI service. It features automatic fallback mechanisms, priority-based routing, and comprehensive error handling.</p>
                     
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>Set Environment Variables</h4>
-                            <pre><code class="language-bash"># Copy example environment file
-cp .env.example .env
-
-# Edit .env and add your API keys
-GEMINI_API_KEY=your_gemini_api_key_here
-GITHUB_TOKEN=your_github_token_here
-OPENROUTER_API_KEY=your_openrouter_api_key_here</code></pre>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>Start the Server</h4>
-                            <pre><code class="language-bash">npm start</code></pre>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">                            <h4>Test Your First Request</h4>
-                            <pre><code class="language-bash">curl -X POST https://jarvis-api.herokuapp.com/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Hello, AI!"}'</code></pre>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="note-box">
-                    <i class="fas fa-info-circle"></i>
-                    <div>
-                        <strong>Note:</strong> You need at least one API key configured for the system to work. The more services you configure, the better the fallback reliability.
-                    </div>
-                </div>
-            </section>
-
-            <!-- Authentication Section -->
-            <section id="authentication" class="doc-section">
-                <h2>Authentication</h2>
-                
-                <p>This API currently requires no authentication for requests, but you need to configure API keys for the AI services:</p>
-                
-                <div class="auth-grid">
-                    <div class="auth-card">
-                        <h4><i class="fas fa-brain"></i> Google Gemini</h4>
-                        <p>Get your API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></p>
-                        <code>GEMINI_API_KEY=AIzaSy...</code>
-                    </div>
-                    
-                    <div class="auth-card">
-                        <h4><i class="fab fa-github"></i> GitHub OpenAI</h4>
-                        <p>Create a token at <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings</a></p>
-                        <code>GITHUB_TOKEN=github_pat_...</code>
-                    </div>
-                    
-                    <div class="auth-card">
-                        <h4><i class="fas fa-route"></i> OpenRouter</h4>
-                        <p>Get your key from <a href="https://openrouter.ai/keys" target="_blank">OpenRouter Keys</a></p>
-                        <code>OPENROUTER_API_KEY=sk-or-v1-...</code>
-                    </div>
-                </div>
-            </section>
-
-            <!-- API Endpoints Section -->
-            <section id="endpoints" class="doc-section">
-                <h2>API Endpoints</h2>
-
-                <!-- Chat Endpoint -->
-                <div class="endpoint-card">
-                    <div class="endpoint-header">
-                        <span class="method post">POST</span>
-                        <span class="path">/api/chat</span>
-                        <span class="description">Send message to AI assistant with automatic fallback</span>
-                    </div>
-                    
-                    <div class="endpoint-content">
-                        <h4>Request Body</h4>
-                        <pre><code class="language-json">{
-  "message": "Your question or request here",
-  "temperature": 0.7,  // Optional: 0.0-2.0, default: 0.7
-  "max_tokens": 2000   // Optional: 1-4000, default: 2000
-}</code></pre>
-
-                        <h4>Response</h4>
-                        <pre><code class="language-json">{
-  "success": true,
-  "response": "AI response here...",
-  "metadata": {
-    "provider": "Google Gemini",
-    "model": "gemini-1.5-flash",
-    "response_time_ms": 1250,
-    "total_response_time_ms": 1250,
-    "fallback_used": false,
-    "attempts_made": 1,
-    "available_services": 3,
-    "usage": {
-      "prompt_tokens": 45,
-      "completion_tokens": 120,
-      "total_tokens": 165
-    }
-  }
-}</code></pre>
-                    </div>
-                </div>
-
-                <!-- Status Endpoint -->
-                <div class="endpoint-card">
-                    <div class="endpoint-header">
-                        <span class="method get">GET</span>
-                        <span class="path">/api/status</span>
-                        <span class="description">Get service status and available providers</span>
-                    </div>
-                    
-                    <div class="endpoint-content">
-                        <h4>Response</h4>
-                        <pre><code class="language-json">{
-  "success": true,
-  "status": "operational",
-  "timestamp": "2025-06-24T10:30:00.000Z",
-  "available_services": 3,
-  "total_services": 3,
-  "current_priority": "Google Gemini",
-  "services": [
-    {
-      "name": "Google Gemini",
-      "model": "gemini-1.5-flash",
-      "priority": 1,
-      "available": true
-    }
-  ]
-}</code></pre>
-                    </div>
-                </div>
-
-                <!-- Test All Services -->
-                <div class="endpoint-card">
-                    <div class="endpoint-header">
-                        <span class="method post">POST</span>
-                        <span class="path">/api/test</span>
-                        <span class="description">Test all AI services</span>
-                    </div>
-                    
-                    <div class="endpoint-content">
-                        <h4>Request Body (Optional)</h4>
-                        <pre><code class="language-json">{
-  "message": "Custom test message"  // Optional
-}</code></pre>
-
-                        <h4>Response</h4>
-                        <pre><code class="language-json">{
-  "success": true,
-  "total_services": 3,
-  "available_services": 3,
-  "results": [
-    {
-      "success": true,
-      "service": "Google Gemini",
-      "test_response": "Hello! How can I assist you today?",
-      "response_time": 890
-    }
-  ]
-}</code></pre>
-                    </div>
-                </div>
-
-                <!-- Test Specific Service -->
-                <div class="endpoint-card">
-                    <div class="endpoint-header">
-                        <span class="method post">POST</span>
-                        <span class="path">/api/test/:serviceIndex</span>
-                        <span class="description">Test specific AI service (0=Gemini, 1=GitHub, 2=OpenRouter)</span>
-                    </div>
-                    
-                    <div class="endpoint-content">
-                        <h4>URL Parameters</h4>
+                    <div class="card">
+                        <h4>🌟 Key Features</h4>
                         <ul>
-                            <li><code>serviceIndex</code> - Service index (0, 1, or 2)</li>
+                            <li><strong>Multi-Provider Support:</strong> Groq, OpenAI, OpenRouter, and Gemini integration</li>
+                            <li><strong>Intelligent Fallback:</strong> Automatic provider switching on failures</li>
+                            <li><strong>Priority Routing:</strong> Configurable provider priority system</li>
+                            <li><strong>Real-time Monitoring:</strong> Comprehensive logging and statistics</li>
+                            <li><strong>RESTful API:</strong> Clean, consistent API design</li>
                         </ul>
-
-                        <h4>Request Body</h4>
-                        <pre><code class="language-json">{
-  "message": "Your message here",
-  "temperature": 0.7,  // Optional
-  "max_tokens": 1000   // Optional
-}</code></pre>
                     </div>
-                </div>
+                </section>
 
-                <!-- Health Check -->
-                <div class="endpoint-card">
-                    <div class="endpoint-header">
-                        <span class="method get">GET</span>
-                        <span class="path">/health</span>
-                        <span class="description">Health check endpoint</span>
+                <!-- Quick Start Section -->
+                <section id="quick-start" class="content-section">
+                    <h2>🚀 Quick Start</h2>
+                    <p>Get started with JARVIS AI in minutes. Here's how to make your first API call:</p>
+                    
+                    <div class="code-block" data-language="bash">
+                        <pre># Start the server
+npm start
+
+# Make a test request
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello, JARVIS!"}'</pre>
                     </div>
                     
-                    <div class="endpoint-content">
-                        <h4>Response</h4>
-                        <pre><code class="language-json">{
-  "status": "ok",
-  "healthy": true,
-  "message": "Everything is working fine.",
-  "providers": {
-    "google_gemini": true,
-    "github_openai": true,
-    "openrouter": true
+                    <div class="card">
+                        <h4>🔧 Installation</h4>
+                        <p>Clone the repository and install dependencies:</p>
+                        <div class="code-block" data-language="bash">
+                            <pre>git clone https://github.com/your-repo/jarvis-ai.git
+cd jarvis-ai
+npm install
+npm start</pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Authentication Section -->
+                <section id="authentication" class="content-section">
+                    <h2>🔐 Authentication</h2>
+                    <p>JARVIS AI currently operates without authentication for local development. For production deployments, implement your preferred authentication method.</p>
+                    
+                    <div class="card">
+                        <h4>🛡️ Security Considerations</h4>
+                        <ul>
+                            <li>Always use HTTPS in production</li>
+                            <li>Implement rate limiting for public endpoints</li>
+                            <li>Consider API key authentication for production use</li>
+                            <li>Monitor and log all API requests</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- AI Providers Section -->
+                <section id="providers" class="content-section">
+                    <h2>⚡ AI Providers</h2>
+                    <p>JARVIS AI supports multiple AI providers, each with unique capabilities and models:</p>
+                    
+                    <div class="provider-grid">
+                        <div class="provider-card">
+                            <h4>🚀 Groq</h4>
+                            <p>Ultra-fast inference with excellent performance for real-time applications.</p>
+                            <div class="provider-models">
+                                <h5>Available Models:</h5>
+                                <ul>
+                                    <li>llama3-8b-8192</li>
+                                    <li>llama3-70b-8192</li>
+                                    <li>mixtral-8x7b-32768</li>
+                                    <li>gemma-7b-it</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="provider-card">
+                            <h4>🧠 OpenAI (GitHub)</h4>
+                            <p>Premium AI models with advanced reasoning capabilities.</p>
+                            <div class="provider-models">
+                                <h5>Available Models:</h5>
+                                <ul>
+                                    <li>gpt-4o</li>
+                                    <li>gpt-4o-mini</li>
+                                    <li>gpt-4-turbo</li>
+                                    <li>gpt-3.5-turbo</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="provider-card">
+                            <h4>🌐 OpenRouter</h4>
+                            <p>Access to a wide variety of AI models through a single API.</p>
+                            <div class="provider-models">
+                                <h5>Available Models:</h5>
+                                <ul>
+                                    <li>anthropic/claude-3-opus</li>
+                                    <li>google/gemini-pro</li>
+                                    <li>meta-llama/llama-3-70b</li>
+                                    <li>mistralai/mixtral-8x7b</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="provider-card">
+                            <h4>💎 Google Gemini</h4>
+                            <p>Google's advanced AI with multimodal capabilities.</p>
+                            <div class="provider-models">
+                                <h5>Available Models:</h5>
+                                <ul>
+                                    <li>gemini-1.5-pro</li>
+                                    <li>gemini-1.5-flash</li>
+                                    <li>gemini-pro</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Chat Endpoint Section -->
+                <section id="chat-endpoint" class="content-section">
+                    <h2>💬 Chat Endpoint</h2>
+                    <p>The primary endpoint for AI chat interactions with automatic provider selection.</p>
+                    
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-post">POST</span>
+                            <span class="endpoint-path">/api/chat</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <div class="endpoint-description">
+                                Send a message to the AI and receive a response. The system automatically selects the best available provider based on priority configuration.
+                            </div>
+                            
+                            <h4>Request Body:</h4>
+                            <div class="code-block" data-language="json">
+                                <pre>{
+  "message": "Hello, how can you help me today?",
+  "provider": "groq",  // Optional: force specific provider
+  "model": "llama3-8b-8192"  // Optional: force specific model
+}</pre>
+                            </div>
+                            
+                            <h4>Response Examples:</h4>
+                            <div class="response-example">
+                                <h5>✅ Success Response</h5>
+                                <div class="code-block" data-language="json">
+                                    <pre>{
+  "success": true,
+  "data": {
+    "response": "Hello! I'm JARVIS AI, your intelligent assistant...",
+    "provider": "groq",
+    "model": "llama3-8b-8192",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "fallbackUsed": false
   }
-}</code></pre>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Fallback System Section -->
-            <section id="fallback-system" class="doc-section">
-                <h2>Fallback System</h2>
-                
-                <p>The API implements an intelligent fallback system that automatically switches between AI providers when failures occur:</p>
-                
-                <div class="fallback-flow">
-                    <div class="flow-step">
-                        <div class="flow-icon primary">
-                            <i class="fas fa-brain"></i>
+}</pre>
+                                </div>
+                            </div>
+                            
+                            <div class="response-example">
+                                <h5>❌ Error Response</h5>
+                                <div class="code-block" data-language="json">
+                                    <pre>{
+  "success": false,
+  "error": {
+    "message": "No available providers",
+    "code": "NO_PROVIDERS_AVAILABLE",
+    "timestamp": "2024-01-15T10:30:00Z"
+  }
+}</pre>
+                                </div>
+                            </div>
                         </div>
-                        <h4>Primary Attempt</h4>
-                        <p>Google Gemini (gemini-1.5-flash)</p>
                     </div>
+                </section>
+
+                <!-- Admin Endpoint Section -->
+                <section id="admin-endpoint" class="content-section">
+                    <h2>⚙️ Admin Endpoint</h2>
+                    <p>Administrative endpoint for system monitoring and configuration.</p>
                     
-                    <div class="flow-arrow">
-                        <i class="fas fa-arrow-down"></i>
-                        <span>If fails</span>
-                    </div>
-                    
-                    <div class="flow-step">
-                        <div class="flow-icon secondary">
-                            <i class="fab fa-github"></i>
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/admin/data</span>
                         </div>
-                        <h4>Secondary Fallback</h4>
-                        <p>GitHub OpenAI (openai/gpt-4.1)</p>
-                    </div>
-                    
-                    <div class="flow-arrow">
-                        <i class="fas fa-arrow-down"></i>
-                        <span>If fails</span>
-                    </div>
-                    
-                    <div class="flow-step">
-                        <div class="flow-icon tertiary">
-                            <i class="fas fa-route"></i>
-                        </div>
-                        <h4>Tertiary Fallback</h4>
-                        <p>OpenRouter (mistralai/mistral-7b-instruct)</p>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <h4>Fallback Behavior</h4>
-                    <ul>
-                        <li><strong>Automatic:</strong> No manual intervention required</li>
-                        <li><strong>Transparent:</strong> Response includes which service was used</li>
-                        <li><strong>Fast:</strong> Immediate retry on service failure</li>
-                        <li><strong>Reliable:</strong> Only fails if all services are unavailable</li>
-                    </ul>
-                </div>
-            </section>
-
-            <!-- Code Examples Section -->
-            <section id="examples" class="doc-section">
-                <h2>Code Examples</h2>
-
-                <div class="example-tabs">
-                    <div class="tab-buttons">
-                        <button class="tab-btn active" data-tab="curl">cURL</button>
-                        <button class="tab-btn" data-tab="javascript">JavaScript</button>
-                        <button class="tab-btn" data-tab="python">Python</button>
-                        <button class="tab-btn" data-tab="nodejs">Node.js</button>
-                    </div>
-
-                    <div class="tab-content">
-                        <div class="tab-panel active" id="curl">                            <h4>Basic Chat Request</h4>
-                            <pre><code class="language-bash">curl -X POST https://jarvis-api.herokuapp.com/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{
-    "message": "Explain machine learning in simple terms",
-    "temperature": 0.7,
-    "max_tokens": 500
-  }'</code></pre>                            <h4>Test All Services</h4>
-                            <pre><code class="language-bash">curl -X POST https://jarvis-api.herokuapp.com/api/test \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Hello from cURL!"}'</code></pre>                            <h4>Check API Status</h4>
-                            <pre><code class="language-bash">curl https://jarvis-api.herokuapp.com/api/status</code></pre>
-                        </div>
-
-                        <div class="tab-panel" id="javascript">                            <h4>Fetch API Example</h4>
-                            <pre><code class="language-javascript">async function chatWithAI(message) {
-  try {
-    const response = await fetch('https://jarvis-api.herokuapp.com/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: message,
-        temperature: 0.7,
-        max_tokens: 1000
-      })
-    });
-
-    const data = await response.json();
-    
-    if (data.success) {
-      console.log('AI Response:', data.response);
-      console.log('Provider Used:', data.metadata.provider);
-      console.log('Fallback Used:', data.metadata.fallback_used);
-    } else {
-      console.error('Error:', data.error);
+                        <div class="endpoint-body">
+                            <div class="endpoint-description">
+                                Retrieve comprehensive system information including provider status, statistics, and configuration details.
+                            </div>
+                            
+                            <h4>Response Example:</h4>
+                            <div class="response-example">
+                                <h5>✅ Success Response</h5>
+                                <div class="code-block" data-language="json">
+                                    <pre>{
+  "success": true,
+  "data": {
+    "providers": [
+      {
+        "id": "groq",
+        "name": "Groq",
+        "enabled": true,
+        "model": "llama3-8b-8192",
+        "priority": 1,
+        "status": "healthy"
+      }
+    ],
+    "statistics": {
+      "totalRequests": 1547,
+      "successfulRequests": 1523,
+      "failedRequests": 24,
+      "averageResponseTime": 847
+    },
+    "system": {
+      "version": "2.0.0",
+      "uptime": 3600000,
+      "memory": {
+        "used": 128.5,
+        "total": 512
+      }
     }
-  } catch (error) {
-    console.error('Request failed:', error);
   }
-}
-
-// Usage
-chatWithAI('What is the future of AI?');</code></pre>
+}</pre>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                </section>
 
-                        <div class="tab-panel" id="python">                            <h4>Python Requests Example</h4>
-                            <pre><code class="language-python">import requests
+                <!-- Status Endpoint Section -->
+                <section id="status-endpoint" class="content-section">
+                    <h2>📊 Status Endpoint</h2>
+                    <p>Quick system health check endpoint.</p>
+                    
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/status</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <div class="endpoint-description">
+                                Returns basic system status information for monitoring and health checks.
+                            </div>
+                            
+                            <h4>Response Example:</h4>
+                            <div class="response-example">
+                                <h5>✅ Success Response</h5>
+                                <div class="code-block" data-language="json">
+                                    <pre>{
+  "status": "healthy",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "version": "2.0.0",
+  "uptime": 3600000,
+  "providers": {
+    "total": 4,
+    "healthy": 3,
+    "unhealthy": 1
+  }
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Health Check Section -->
+                <section id="health-endpoint" class="content-section">
+                    <h2>❤️ Health Check</h2>
+                    <p>Detailed health check endpoint for monitoring systems.</p>
+                    
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge method-get">GET</span>
+                            <span class="endpoint-path">/health</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <div class="endpoint-description">
+                                Comprehensive health check including database connections, external services, and system resources.
+                            </div>
+                            
+                            <h4>Response Example:</h4>
+                            <div class="response-example">
+                                <h5>✅ Healthy Response</h5>
+                                <div class="code-block" data-language="json">
+                                    <pre>{
+  "status": "healthy",
+  "checks": {
+    "database": "healthy",
+    "providers": "healthy",
+    "memory": "healthy",
+    "disk": "healthy"
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Error Handling Section -->
+                <section id="error-handling" class="content-section">
+                    <h2>🚨 Error Handling</h2>
+                    <p>Understanding JARVIS AI's error handling and response codes.</p>
+                    
+                    <div class="card">
+                        <h4>📋 Error Response Format</h4>
+                        <p>All errors follow a consistent format:</p>
+                        <div class="code-block" data-language="json">
+                            <pre>{
+  "success": false,
+  "error": {
+    "message": "Human readable error message",
+    "code": "ERROR_CODE",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "details": {
+      // Additional error context
+    }
+  }
+}</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>🔢 Common Error Codes</h4>
+                        <ul>
+                            <li><span class="inline-code">INVALID_REQUEST</span> - Malformed request body</li>
+                            <li><span class="inline-code">NO_PROVIDERS_AVAILABLE</span> - All providers are down</li>
+                            <li><span class="inline-code">RATE_LIMIT_EXCEEDED</span> - Too many requests</li>
+                            <li><span class="inline-code">PROVIDER_ERROR</span> - AI provider returned an error</li>
+                            <li><span class="inline-code">INTERNAL_ERROR</span> - Server internal error</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Rate Limiting Section -->
+                <section id="rate-limiting" class="content-section">
+                    <h2>⏱️ Rate Limiting</h2>
+                    <p>Information about API rate limits and best practices.</p>
+                    
+                    <div class="card">
+                        <h4>📊 Current Limits</h4>
+                        <ul>
+                            <li><strong>Chat Endpoint:</strong> 100 requests per minute</li>
+                            <li><strong>Admin Endpoint:</strong> 60 requests per minute</li>
+                            <li><strong>Status Endpoint:</strong> 200 requests per minute</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>🎯 Best Practices</h4>
+                        <ul>
+                            <li>Implement exponential backoff for retries</li>
+                            <li>Cache responses when appropriate</li>
+                            <li>Use batch requests for multiple operations</li>
+                            <li>Monitor your usage with the admin endpoint</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Deployment Section -->
+                <section id="deployment" class="content-section">
+                    <h2>🚀 Deployment</h2>
+                    <p>Guidelines for deploying JARVIS AI in production environments.</p>
+                    
+                    <div class="card">
+                        <h4>🐳 Docker Deployment</h4>
+                        <div class="code-block" data-language="dockerfile">
+                            <pre>FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>☁️ Environment Variables</h4>
+                        <ul>
+                            <li><span class="inline-code">PORT</span> - Server port (default: 3000)</li>
+                            <li><span class="inline-code">GROQ_API_KEY</span> - Groq API key</li>
+                            <li><span class="inline-code">OPENAI_API_KEY</span> - OpenAI API key</li>
+                            <li><span class="inline-code">OPENROUTER_API_KEY</span> - OpenRouter API key</li>
+                            <li><span class="inline-code">GEMINI_API_KEY</span> - Google Gemini API key</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Examples Section -->
+                <section id="examples" class="content-section">
+                    <h2>📖 Examples</h2>
+                    <p>Practical examples of using JARVIS AI in different scenarios.</p>
+                    
+                    <div class="card">
+                        <h4>🐍 Python Example</h4>
+                        <div class="code-block" data-language="python">
+                            <pre>import requests
 import json
 
-def chat_with_ai(message):
-    url = "https://jarvis-api.herokuapp.com/api/chat"
-    headers = {"Content-Type": "application/json"}
-    data = {
-        "message": message,
-        "temperature": 0.7,
-        "max_tokens": 1000
-    }
+def chat_with_jarvis(message):
+    url = "http://localhost:3000/api/chat"
+    payload = {"message": message}
     
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        result = response.json()
-        
-        if result.get('success'):
-            print(f"AI Response: {result['response']}")
-            print(f"Provider: {result['metadata']['provider']}")
-            print(f"Response Time: {result['metadata']['response_time_ms']}ms")
+    response = requests.post(url, json=payload)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if data["success"]:
+            return data["data"]["response"]
         else:
-            print(f"Error: {result.get('error')}")
-            
-    except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
+            return f"Error: {data['error']['message']}"
+    else:
+        return f"HTTP Error: {response.status_code}"
 
 # Usage
-chat_with_ai("Explain quantum computing")</code></pre>
+response = chat_with_jarvis("What's the weather like?")
+print(response)</pre>
                         </div>
-
-                        <div class="tab-panel" id="nodejs">                            <h4>Node.js Axios Example</h4>
-                            <pre><code class="language-javascript">const axios = require('axios');
-
-class AIClient {
-  constructor(baseURL = 'https://jarvis-api.herokuapp.com') {
-    this.client = axios.create({
-      baseURL,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-  }
-
-  async chat(message, options = {}) {
+                    </div>
+                    
+                    <div class="card">
+                        <h4>📜 JavaScript Example</h4>
+                        <div class="code-block" data-language="javascript">
+                            <pre>async function chatWithJarvis(message) {
     try {
-      const response = await this.client.post('/api/chat', {
-        message,
-        temperature: options.temperature || 0.7,
-        max_tokens: options.maxTokens || 1000
-      });
-
-      return response.data;
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            return data.data.response;
+        } else {
+            throw new Error(data.error.message);
+        }
     } catch (error) {
-      throw new Error(`Chat request failed: ${error.message}`);
+        console.error('Error:', error);
+        return null;
     }
-  }
-
-  async getStatus() {
-    try {
-      const response = await this.client.get('/api/status');
-      return response.data;
-    } catch (error) {
-      throw new Error(`Status request failed: ${error.message}`);
-    }
-  }
-
-  async testServices() {
-    try {
-      const response = await this.client.post('/api/test');
-      return response.data;
-    } catch (error) {
-      throw new Error(`Test request failed: ${error.message}`);
-    }
-  }
 }
 
 // Usage
-const ai = new AIClient();
-
-async function example() {
-  try {
-    const result = await ai.chat('What are the benefits of renewable energy?');
-    console.log('Response:', result.response);
-    console.log('Provider:', result.metadata.provider);
-  } catch (error) {
-    console.error('Error:', error.message);
-  }
-}
-
-example();</code></pre>
+chatWithJarvis('Hello, JARVIS!')
+    .then(response => console.log(response))
+    .catch(error => console.error(error));</pre>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <!-- Error Handling Section -->
-            <section id="error-handling" class="doc-section">
-                <h2>Error Handling</h2>
-                
-                <div class="error-grid">
-                    <div class="error-card">
-                        <h4>400 - Bad Request</h4>
-                        <p>Invalid request parameters</p>
-                        <pre><code class="language-json">{
-  "success": false,
-  "error": "Invalid or missing 'message' in request body."
-}</code></pre>
-                    </div>
-                    
-                    <div class="error-card">
-                        <h4>500 - Service Error</h4>
-                        <p>All AI services unavailable</p>
-                        <pre><code class="language-json">{
-  "success": false,
-  "error": "AI service temporarily unavailable. Please try again.",
-  "metadata": {
-    "available_services": 0
-  }
-}</code></pre>
-                    </div>
-                </div>
-
-                <div class="error-best-practices">
-                    <h4>Best Practices</h4>
-                    <ul>
-                        <li><strong>Always check</strong> the <code>success</code> field in responses</li>
-                        <li><strong>Implement retry logic</strong> for temporary failures</li>
-                        <li><strong>Monitor</strong> the <code>fallback_used</code> field to track service reliability</li>
-                        <li><strong>Use</strong> the <code>/api/status</code> endpoint to check service health</li>
-                    </ul>
-                </div>
-            </section>
-
-            <!-- Rate Limits Section -->
-            <section id="rate-limits" class="doc-section">
-                <h2>Rate Limits</h2>
-                
-                <div class="rate-limit-info">
-                    <div class="rate-card">
-                        <h4>Current Limits</h4>
-                        <ul>
-                            <li><strong>Request Size:</strong> 10MB maximum</li>
-                            <li><strong>Token Limits:</strong> 1-4000 tokens per request</li>
-                            <li><strong>Temperature:</strong> 0.0-2.0 range</li>
-                            <li><strong>Timeout:</strong> 30 seconds per request</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="rate-card">
-                        <h4>Service-Specific Limits</h4>
-                        <p>Rate limits depend on the individual AI service APIs:</p>
-                        <ul>
-                            <li><strong>Google Gemini:</strong> Per Google's API limits</li>
-                            <li><strong>GitHub OpenAI:</strong> Per GitHub's rate limits</li>
-                            <li><strong>OpenRouter:</strong> Per OpenRouter's limits</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SDKs & Tools Section -->
-            <section id="sdks" class="doc-section">
-                <h2>SDKs & Tools</h2>
-                
-                <div class="sdk-grid">
-                    <div class="sdk-card">
-                        <div class="sdk-icon">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <h4>JARVIS UI</h4>
-                        <p>Interactive chat interface for testing and using the API</p>
-                        <a href="/jarvis" class="sdk-link">Try JARVIS →</a>
-                    </div>
-                    
-                    <div class="sdk-card">
-                        <div class="sdk-icon">
-                            <i class="fas fa-terminal"></i>
-                        </div>
-                        <h4>CLI Tool</h4>
-                        <p>Command line interface for API testing</p>
-                        <pre><code>curl -X POST /api/chat -d '{"message": "test"}'</code></pre>
-                    </div>
-                    
-                    <div class="sdk-card">
-                        <div class="sdk-icon">
-                            <i class="fas fa-code"></i>
-                        </div>
-                        <h4>OpenAPI Spec</h4>
-                        <p>Generate clients for any language</p>
-                        <a href="/api/openapi.json" class="sdk-link">Download Spec →</a>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </main>
     </div>
+</body>
+                <li><a href="#endpoints">API Endpoints</a></li>
+                <li><a href="#providers">AI Providers</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+                <li><a href="#examples">Examples</a></li>
+                <li><a href="#deployment">Deployment</a></li>
+            </ul>
+        </div>
 
-    <script src="docs-script.js"></script>
+        <div class="nav">
+            <h2>🚀 Quick Navigation</h2>
+            <ul>
+                <li><a href="#overview">System Overview</a></li>
+                <li><a href="#quick-start">Getting Started</a></li>
+                <li><a href="#endpoints">API Reference</a></li>
+                <li><a href="#providers">AI Providers</a></li>
+                <li><a href="#examples">Code Examples</a></li>
+                <li><a href="#deployment">Deployment Guide</a></li>
+            </ul>
+        </div>
+
+        <div class="section" id="overview">
+            <h2>🌟 System Overview</h2>
+            <p>JARVIS AI is a professional multi-provider AI API system that provides intelligent fallback capabilities across multiple AI providers. The system automatically selects the best available AI model based on priority configuration and seamlessly falls back to alternatives if a provider fails.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-title">Automatic Fallback</div>
+                    <p>Intelligent provider switching ensures maximum uptime and reliability</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Priority-Based Selection</div>
+                    <p>Configurable provider priority system for optimal performance</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <div class="feature-title">Professional UI</div>
+                    <p>Modern admin panel and chat interface for easy testing</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Comprehensive Logging</div>
+                    <p>Detailed logging and real-time monitoring capabilities</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="quick-start">
+            <h2>🚀 Quick Start</h2>
+            
+            <h3>1. Environment Setup</h3>
+            <p>Create a <code>.env</code> file with your API keys:</p>
+            <div class="code-block">
+                <div class="language-label">Environment</div>
+                <pre>
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+BASE_URL=http://localhost:3000
+
+# AI Provider API Keys
+GROQ_API_KEY=gsk_your_groq_api_key_here
+GITHUB_TOKEN=github_pat_your_github_token_here
+OPENROUTER_API_KEY=sk-or-v1-your_openrouter_key_here
+GEMINI_API_KEY=AIzaSy_your_gemini_key_here
+                </pre>
+            </div>
+
+            <h3>2. Installation</h3>
+            <div class="code-block">
+                <div class="language-label">Bash</div>
+                <pre>
+# Install dependencies
+npm install
+
+# Start the server
+npm start
+
+# Or use PM2 for production
+pm2 start ecosystem.config.json
+                </pre>
+            </div>
+
+            <h3>3. Test the API</h3>
+            <div class="code-block">
+                <div class="language-label">cURL</div>
+                <pre>
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello JARVIS!"}'
+                </pre>
+            </div>
+
+            <div class="info-box">
+                <h4>💡 Pro Tip</h4>
+                <p>Visit <code>/jarvis</code> for the admin panel to test all AI models interactively, or <code>/jarvis/chat</code> for a clean chat interface.</p>
+            </div>
+        </div>
+
+        <div class="section" id="endpoints">
+            <h2>🛠️ API Endpoints</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method-badge method-post">POST</span>
+                    <span class="endpoint-url">/api/chat</span>
+                </div>
+                <p>Main chat endpoint with intelligent fallback system</p>
+                
+                <h4>Request Body:</h4>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>message</code></td>
+                            <td>string</td>
+                            <td><span class="required">Required</span></td>
+                            <td>The message to send to the AI</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Response:</h4>
+                <div class="code-block">
+                    <div class="language-label">JSON</div>
+                    <pre>
+{
+  "success": true,
+  "data": {
+    "response": "Hello! I'm JARVIS, your AI assistant...",
+    "provider": "groq",
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "fallbackUsed": false,
+    "totalAttempts": 1,
+    "responseTime": 1247,
+    "settings": {
+      "allowCompleteResponse": true,
+      "noTimeoutRestrictions": true
+    }
+  },
+  "timestamp": "2025-07-18T10:30:00.000Z"
+}
+                    </pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method-badge method-get">GET</span>
+                    <span class="endpoint-url">/api/status</span>
+                </div>
+                <p>Get system status and available providers</p>
+                
+                <h4>Response:</h4>
+                <div class="code-block">
+                    <div class="language-label">JSON</div>
+                    <pre>
+{
+  "success": true,
+  "data": {
+    "status": "operational",
+    "availableProviders": ["groq", "github", "openrouter", "gemini"],
+    "totalProviders": 4,
+    "priorityOrder": [
+      {
+        "id": "groq",
+        "name": "Groq",
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "priority": 1,
+        "enabled": true
+      }
+    ]
+  }
+}
+                    </pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method-badge method-get">GET</span>
+                    <span class="endpoint-url">/health</span>
+                </div>
+                <p>Health check endpoint</p>
+                
+                <h4>Response:</h4>
+                <div class="code-block">
+                    <div class="language-label">JSON</div>
+                    <pre>
+{
+  "success": true,
+  "data": {
+    "status": "healthy",
+    "version": "2.0.0",
+    "environment": "production",
+    "timestamp": "2025-07-18T10:30:00.000Z",
+    "uptime": 3600,
+    "features": {
+      "multiProvider": true,
+      "priorityFallback": true,
+      "professionalUI": true,
+      "comprehensiveLogging": true
+    }
+  }
+}
+                    </pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method-badge method-get">GET</span>
+                    <span class="endpoint-url">/admin/data</span>
+                </div>
+                <p>Get admin panel data (providers, models, configuration)</p>
+            </div>
+        </div>
+
+        <div class="section" id="providers">
+            <h2>🤖 AI Providers</h2>
+            <p>JARVIS AI supports multiple AI providers with automatic fallback capabilities. The system tries providers in priority order and falls back to alternatives if needed.</p>
+            
+            <div class="provider-grid">
+                <div class="provider-card">
+                    <div class="provider-name">🚀 Groq</div>
+                    <div class="provider-model">meta-llama/llama-4-scout-17b-16e-instruct</div>
+                    <div class="provider-desc">Fastest AI model with Llama 4 Scout - high performance and speed</div>
+                </div>
+                <div class="provider-card">
+                    <div class="provider-name">🧠 GitHub OpenAI</div>
+                    <div class="provider-model">gpt-4o</div>
+                    <div class="provider-desc">High quality responses with GPT-4o - very intelligent and capable</div>
+                </div>
+                <div class="provider-card">
+                    <div class="provider-name">🔀 OpenRouter</div>
+                    <div class="provider-model">moonshotai/kimi-k2:free</div>
+                    <div class="provider-desc">Multiple free models available through OpenRouter platform</div>
+                </div>
+                <div class="provider-card">
+                    <div class="provider-name">🌟 Google Gemini</div>
+                    <div class="provider-model">gemini-1.5-flash</div>
+                    <div class="provider-desc">Google's Gemini model - good for various tasks and reliable</div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>🔄 Fallback System</h4>
+                <p>The system automatically tries providers in order (Priority 1 → 2 → 3 → 4). If a provider fails, it seamlessly moves to the next available option without user intervention.</p>
+            </div>
+        </div>
+
+        <div class="section" id="configuration">
+            <h2>⚙️ Configuration</h2>
+            
+            <h3>Priority Configuration</h3>
+            <p>Edit <code>priority.json</code> to customize provider priority:</p>
+            <div class="code-block">
+                <div class="language-label">JSON</div>
+                <pre>
+{
+  "version": "1.0.0",
+  "description": "AI Model Priority Configuration",
+  "providers": [
+    {
+      "id": "groq",
+      "name": "Groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "priority": 1,
+      "enabled": true,
+      "description": "Fastest AI model with Llama 4 Scout"
+    }
+  ],
+  "settings": {
+    "noTimeoutRestrictions": true,
+    "noTokenLimits": true,
+    "allowCompleteResponse": true
+  }
+}
+                </pre>
+            </div>
+
+            <h3>Environment Variables</h3>
+            <table class="parameter-table">
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Description</th>
+                        <th>Required</th>
+                        <th>Default</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>PORT</code></td>
+                        <td>Server port</td>
+                        <td><span class="optional">Optional</span></td>
+                        <td>3000</td>
+                    </tr>
+                    <tr>
+                        <td><code>NODE_ENV</code></td>
+                        <td>Environment mode</td>
+                        <td><span class="optional">Optional</span></td>
+                        <td>development</td>
+                    </tr>
+                    <tr>
+                        <td><code>BASE_URL</code></td>
+                        <td>Base URL for the API</td>
+                        <td><span class="optional">Optional</span></td>
+                        <td>Auto-generated</td>
+                    </tr>
+                    <tr>
+                        <td><code>GROQ_API_KEY</code></td>
+                        <td>Groq API key</td>
+                        <td><span class="required">Required</span></td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>GITHUB_TOKEN</code></td>
+                        <td>GitHub token for AI models</td>
+                        <td><span class="required">Required</span></td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>OPENROUTER_API_KEY</code></td>
+                        <td>OpenRouter API key</td>
+                        <td><span class="required">Required</span></td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>GEMINI_API_KEY</code></td>
+                        <td>Google Gemini API key</td>
+                        <td><span class="required">Required</span></td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section" id="error-handling">
+            <h2>🚨 Error Handling</h2>
+            
+            <h3>Error Response Format</h3>
+            <div class="code-block">
+                <div class="language-label">JSON</div>
+                <pre>
+{
+  "success": false,
+  "error": {
+    "message": "All AI providers failed",
+    "details": "No providers available or all providers returned errors",
+    "code": "PROVIDERS_UNAVAILABLE",
+    "attempts": [
+      {
+        "provider": "groq",
+        "error": "API key invalid"
+      },
+      {
+        "provider": "github",
+        "error": "Rate limit exceeded"
+      }
+    ]
+  },
+  "timestamp": "2025-07-18T10:30:00.000Z"
+}
+                </pre>
+            </div>
+
+            <h3>Common Error Codes</h3>
+            <table class="parameter-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Description</th>
+                        <th>HTTP Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>INVALID_REQUEST</code></td>
+                        <td>Invalid request format or missing parameters</td>
+                        <td>400</td>
+                    </tr>
+                    <tr>
+                        <td><code>PROVIDERS_UNAVAILABLE</code></td>
+                        <td>All AI providers failed or are unavailable</td>
+                        <td>503</td>
+                    </tr>
+                    <tr>
+                        <td><code>RATE_LIMIT_EXCEEDED</code></td>
+                        <td>Too many requests</td>
+                        <td>429</td>
+                    </tr>
+                    <tr>
+                        <td><code>INTERNAL_ERROR</code></td>
+                        <td>Internal server error</td>
+                        <td>500</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="warning-box">
+                <h4>⚠️ Important</h4>
+                <p>When all providers fail, the system returns a 503 Service Unavailable status. The fallback system ensures maximum uptime by trying all available providers before failing.</p>
+            </div>
+        </div>
+
+        <div class="section" id="examples">
+            <h2>💡 Code Examples</h2>
+            
+            <h3>JavaScript/Node.js</h3>
+            <div class="code-block">
+                <div class="language-label">JavaScript</div>
+                <pre>
+const axios = require('axios');
+
+async function chatWithJarvis(message) {
+    try {
+        const response = await axios.post('http://localhost:3000/api/chat', {
+            message: message
+        });
+        
+        if (response.data.success) {
+            console.log('JARVIS:', response.data.data.response);
+            console.log('Provider:', response.data.data.provider);
+            console.log('Model:', response.data.data.model);
+            console.log('Response Time:', response.data.data.responseTime + 'ms');
+        } else {
+            console.error('Error:', response.data.error.message);
+        }
+    } catch (error) {
+        console.error('Network error:', error.message);
+    }
+}
+
+// Example usage
+chatWithJarvis('Hello JARVIS, how are you today?');
+                </pre>
+            </div>
+
+            <h3>Python</h3>
+            <div class="code-block">
+                <div class="language-label">Python</div>
+                <pre>
+import requests
+import json
+
+def chat_with_jarvis(message):
+    url = "http://localhost:3000/api/chat"
+    payload = {"message": message}
+    
+    try:
+        response = requests.post(url, json=payload)
+        data = response.json()
+        
+        if data['success']:
+            print(f"JARVIS: {data['data']['response']}")
+            print(f"Provider: {data['data']['provider']}")
+            print(f"Model: {data['data']['model']}")
+            print(f"Response Time: {data['data']['responseTime']}ms")
+        else:
+            print(f"Error: {data['error']['message']}")
+            
+    except requests.exceptions.RequestException as e:
+        print(f"Network error: {e}")
+
+# Example usage
+chat_with_jarvis("Hello JARVIS, can you help me with Python programming?")
+                </pre>
+            </div>
+
+            <h3>cURL</h3>
+            <div class="code-block">
+                <div class="language-label">Bash</div>
+                <pre>
+# Basic chat request
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Explain quantum computing in simple terms"}'
+
+# Health check
+curl -X GET http://localhost:3000/health
+
+# System status
+curl -X GET http://localhost:3000/api/status
+                </pre>
+            </div>
+        </div>
+
+        <div class="section" id="deployment">
+            <h2>🚀 Deployment</h2>
+            
+            <h3>Production Deployment</h3>
+            <div class="code-block">
+                <div class="language-label">Bash</div>
+                <pre>
+# Using PM2 (recommended)
+pm2 start ecosystem.config.json
+pm2 save
+pm2 startup
+
+# Manual deployment
+NODE_ENV=production npm start
+                </pre>
+            </div>
+
+            <h3>Docker Deployment</h3>
+            <div class="code-block">
+                <div class="language-label">Docker</div>
+                <pre>
+# Build image
+docker build -t jarvis-ai .
+
+# Run container
+docker run -d \
+  --name jarvis-ai \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e GROQ_API_KEY=your_key_here \
+  -e GITHUB_TOKEN=your_token_here \
+  -e OPENROUTER_API_KEY=your_key_here \
+  -e GEMINI_API_KEY=your_key_here \
+  jarvis-ai
+                </pre>
+            </div>
+
+            <h3>DigitalOcean Deployment</h3>
+            <p>The system is optimized for DigitalOcean deployment with automatic port detection and base URL configuration.</p>
+            
+            <div class="info-box">
+                <h4>🔧 Deployment Features</h4>
+                <ul>
+                    <li>Automatic port detection from environment</li>
+                    <li>Dynamic base URL configuration</li>
+                    <li>PM2 ecosystem configuration included</li>
+                    <li>Comprehensive logging for production monitoring</li>
+                    <li>Health check endpoints for load balancer integration</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Security Notes</h4>
+                <p>Always use HTTPS in production, set strong API keys, and configure proper firewall rules. The system includes rate limiting and request validation for security.</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
