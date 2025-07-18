@@ -46,9 +46,20 @@ class JarvisServer {
 
   validateEnvironment() {
     try {
+      // Ensure dotenv is loaded first
+      dotenv.config();
+
+      // Log environment status
+      console.log('🔧 Environment Configuration:');
+      console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`   PORT: ${process.env.PORT || '3000 (default)'}`);
+      console.log(`   BASE_URL: ${process.env.BASE_URL || 'auto-generated'}`);
+      console.log('');
+
       validateConfig();
     } catch (error) {
       logger.error('Configuration validation failed', { error: error.message });
+      console.error('❌ Failed to start JARVIS API:', error.message);
       process.exit(1);
     }
   }

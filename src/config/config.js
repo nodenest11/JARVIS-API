@@ -114,12 +114,13 @@ export function validateConfig() {
     const config = getConfig();
     const errors = [];
 
-    // Check required environment variables
-    if (!config.SERVER.PORT) {
-        errors.push('PORT environment variable is required');
+    // Check if PORT is set in environment - if not, we'll use the default
+    if (!process.env.PORT) {
+        console.log('⚠️  PORT environment variable not set, using default port 3000');
+        console.log('   To set a custom port, add PORT=3006 to your .env file');
     }
 
-    // Validate port number
+    // Validate port number if provided
     const port = parseInt(process.env.PORT);
     if (port && (port < 1 || port > 65535)) {
         errors.push('PORT must be a valid number between 1 and 65535');
