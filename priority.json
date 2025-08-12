@@ -4,20 +4,22 @@
   "lastUpdated": "2025-07-17T12:00:00.000Z",
   "providers": [
     {
-      "id": "groq",
-      "name": "Groq",
-      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
-      "priority": 1,
-      "enabled": true,
-      "description": "Fastest AI model with Llama 4 Scout - high performance"
-    },
-    {
       "id": "github",
       "name": "GitHub OpenAI",
-      "model": "gpt-4o",
+      "model": "gpt-5",
+      "priority": 1,
+      "enabled": true,
+      "quality": "high",
+      "description": "High quality reasoning & creativity with GPT-4o"
+    },
+    {
+      "id": "gemini",
+      "name": "Google Gemini",
+      "model": "gemini-2.5-flash",
       "priority": 2,
       "enabled": true,
-      "description": "High quality responses with GPT-4o - very intelligent"
+      "quality": "balanced",
+      "description": "Good general performance with Google Gemini Flash"
     },
     {
       "id": "openrouter",
@@ -25,15 +27,17 @@
       "model": "moonshotai/kimi-k2:free",
       "priority": 3,
       "enabled": true,
-      "description": "Multiple free models available through OpenRouter"
+      "quality": "balanced",
+      "description": "Access to multiple community/free models"
     },
     {
-      "id": "gemini",
-      "name": "Google Gemini",
-      "model": "gemini-1.5-flash",
+      "id": "groq",
+      "name": "Groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
       "priority": 4,
       "enabled": true,
-      "description": "Google's Gemini model - good for various tasks"
+      "quality": "speed",
+      "description": "Very fast inference with Llama 4 Scout"
     }
   ],
   "settings": {
