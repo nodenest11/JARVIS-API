@@ -2,8 +2,8 @@
  * GitHub OpenAI Service Implementation
  */
 
+import ModelClient, { isUnexpected } from '@azure-rest/ai-inference';
 import { AzureKeyCredential } from '@azure/core-auth';
-import ModelClient from '@azure-rest/ai-inference';
 import { BaseAIService } from './BaseAIService.js';
 import { CONFIG } from '../config/config.js';
 
@@ -13,8 +13,11 @@ class GitHubOpenAIService extends BaseAIService {
   }
 
   async createClient() {
-    this.client = new ModelClient(
-      this.config.baseURL,
+    // Use the correct GitHub Models endpoint
+    const endpoint = 'https://models.github.ai/inference';
+    
+    this.client = ModelClient(
+      endpoint,
       new AzureKeyCredential(this.apiKey)
     );
   }
@@ -35,13 +38,13 @@ class GitHubOpenAIService extends BaseAIService {
           ],
           model: options.model,
           temperature: options.temperature,
-          max_tokens: options.maxTokens,
-          top_p: 0.9
+          max_tokens: options.maxTokens
         }
       });
 
-      if (response.status !== '200') {
-        throw new Error(`GitHub API error: ${response.status}`);
+      // Use isUnexpected to check for errors
+      if (isUnexpected(response)) {
+        throw response.body.error;
       }
 
       const result = response.body;
