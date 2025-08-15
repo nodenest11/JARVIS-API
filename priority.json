@@ -7,7 +7,7 @@
       "id": "github",
       "name": "GitHub OpenAI",
       "model": "gpt-4o",
-      "priority": 2,
+      "priority": 1,
       "enabled": true,
       "quality": "high",
       "description": "High quality reasoning & creativity with GPT-4o"
@@ -16,7 +16,7 @@
       "id": "gemini",
       "name": "Google Gemini",
       "model": "gemini-2.5-flash",
-      "priority": 1,
+      "priority": 2,
       "enabled": true,
       "quality": "balanced",
       "description": "Good general performance with Google Gemini Flash"
