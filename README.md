@@ -16,6 +16,13 @@
 - **OpenRouter** - Access to multiple open-source models
 - **Google Gemini** - Advanced reasoning capabilities
 
+### 🌐 **Real-time Web Scraping**
+
+- **Intelligent Detection** - AI automatically determines when current information is needed
+- **Multi-Engine Support** - DuckDuckGo and SearX search engines with fallback
+- **Clean Results** - Structured data with titles, snippets, and relevance scoring
+- **Seamless Integration** - Web data is automatically incorporated into AI responses
+
 ### 🎯 **Intelligent Fallback System**
 
 - Automatic provider switching on failures
@@ -108,6 +115,22 @@
 curl -X POST http://localhost:3000/api/chat \
   -H "Content-Type: application/json" \
   -d '{"message": "Hello, how can you help me?"}'
+```
+
+### Chat with Web Scraping
+
+```bash
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What are the latest developments in AI technology?"}'
+```
+
+### Direct Web Scraping
+
+```bash
+curl -X POST http://localhost:3000/api/scrape \
+  -H "Content-Type: application/json" \
+  -d '{"query": "latest technology news", "maxResults": 5}'
 ```
 
 ### Response Format
