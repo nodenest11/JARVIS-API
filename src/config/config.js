@@ -119,6 +119,14 @@ export const getConfig = () => {
         HEALTH: '/health',
         ADMIN: '/admin',
         DOCS: '/docs'
+    },
+
+    // Web Scraping Configuration
+    WEB_SCRAPING: {
+        API_URL: process.env.WEB_SCRAPING_API_URL || 'http://localhost:8000',
+        TIMEOUT: 30000,
+        MAX_RESULTS: 5,
+        DEFAULT_ENGINE: 'google'
     }
     };
 

@@ -12,6 +12,7 @@ import GroqService from './groqService.js';
 import GeminiService from './geminiService.js';
 import GitHubOpenAIService from './githubOpenAIService.js';
 import OpenRouterService from './openRouterService.js';
+import HybridAIService from './hybridAIService.js';
 
 class AIServiceManager {
   constructor() {
@@ -27,6 +28,9 @@ class AIServiceManager {
     this.availableServicesCache = null;
     this.availableServicesCacheTime = 0;
     this.CACHE_TTL = 30000; // 30 seconds
+    
+    // Initialize hybrid service for intelligent web search
+    this.hybridService = new HybridAIService(this);
     
     // Only initialize services that have API keys
     this.lazyInitializeServices();
@@ -115,6 +119,24 @@ class AIServiceManager {
   }
 
   async generateResponse(message, options = {}) {
+    // Check if hybrid mode is enabled (default: true)
+    const useHybridMode = options.hybridMode !== false;
+    
+    if (useHybridMode) {
+      try {
+        // Use hybrid service for intelligent web search + AI response
+        return await this.hybridService.generateResponse(message, options);
+      } catch (error) {
+        logger.warn('Hybrid service failed, falling back to pure AI', { error: error.message });
+        // Continue to pure AI fallback below
+      }
+    }
+
+    // Pure AI mode (fallback or explicitly requested)
+    return await this.generatePureAIResponse(message, options);
+  }
+
+  async generatePureAIResponse(message, options = {}) {
     const availableServices = this.getAvailableServices();
 
     if (availableServices.length === 0) {
@@ -125,7 +147,7 @@ class AIServiceManager {
     
     // Only log in non-production
     if (process.env.NODE_ENV !== 'production') {
-    logger.info(`Starting AI request with ${availableServices.length} available services`, {
+    logger.info(`Starting pure AI request with ${availableServices.length} available services`, {
       noTimeoutRestrictions: settings.noTimeoutRestrictions,
       noTokenLimits: settings.noTokenLimits,
       allowCompleteResponse: settings.allowCompleteResponse
@@ -269,6 +291,16 @@ class AIServiceManager {
       results.push(result);
     }
 
+    // Test hybrid service
+    const hybridTest = await this.hybridService.testHybridService();
+    results.push({
+      service: 'hybrid',
+      success: hybridTest.success,
+      provider: 'Hybrid AI + Web Search',
+      components: hybridTest.components,
+      error: hybridTest.error
+    });
+
     const successfulServices = results.filter(r => r.success).length;
 
     logger.info(`Service test completed: ${successfulServices}/${results.length} services working`);
@@ -280,14 +312,17 @@ class AIServiceManager {
     };
   }
 
-  getServiceStatus() {
+  async getServiceStatus() {
     const availableServices = this.getAvailableServices();
+    const hybridStatus = await this.hybridService.getServiceStatus();
 
     return {
       totalServices: Object.keys(this.serviceClasses).length,
       availableServices: availableServices.length,
       services: availableServices,
-      currentPriority: availableServices[0]?.name || 'None available'
+      currentPriority: availableServices[0]?.name || 'None available',
+      hybridCapabilities: hybridStatus.hybridCapabilities,
+      webSearchAvailable: hybridStatus.webSearchAvailable
     };
   }
 

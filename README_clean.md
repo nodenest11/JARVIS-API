@@ -1,28 +1,44 @@
-# JARVIS AI API
+# JARVIS AI API - MVP
 
-AI API with intelligent web search powered by Gemini AI.
+A production-ready AI API with intelligent web search capabilities powered by Gemini AI.
 
-## Features
+## 🚀 Features
 
-- Intelligent Decision Making: Gemini AI decides when to use web search
-- Multi-Provider AI: GitHub OpenAI, Groq, OpenRouter, Google Gemini
-- Web Search Integration: Real-time web search for current information
-- Hybrid Responses: Combines AI knowledge with web data
+- **Intelligent Decision Making**: Gemini AI decides when to use web search vs AI-only responses
+- **Multi-Provider AI**: Support for GitHub OpenAI, Groq, OpenRouter, and Google Gemini
+- **Web Search Integration**: Real-time web search for current information
+- **Hybrid Responses**: Combines AI knowledge with web data
+- **Production Ready**: Optimized performance and error handling
 
-## Quick Start
+## 🛠️ Quick Start
 
-1. Install: `npm install`
-2. Create .env file:
+1. **Install Dependencies**
+   ```bash
+   npm install
    ```
+
+2. **Set Environment Variables**
+   ```bash
+   # Create .env file with your API keys
    NODE_ENV=development
    PORT=3002
-   GROQ_API_KEY=your_key
-   GITHUB_TOKEN=your_token
-   OPENROUTER_API_KEY=your_key
-   GEMINI_API_KEY=your_key
+   GROQ_API_KEY=your_groq_key
+   GITHUB_TOKEN=your_github_token
+   OPENROUTER_API_KEY=your_openrouter_key
+   GEMINI_API_KEY=your_gemini_key
    ```
-3. Start: `npm start`
-4. Test: `curl -X POST http://localhost:3002/api/chat -H "Content-Type: application/json" -d '{"message": "What is the current weather in New York?"}'`
+
+3. **Start the Server**
+   ```bash
+   npm start
+   ```
+
+4. **Test the API**
+   ```bash
+   curl -X POST http://localhost:3002/api/chat \
+     -H "Content-Type: application/json" \
+     -d '{"message": "What is the current weather in New York?"}'
+   ```
 
 ## 📚 API Endpoints
 

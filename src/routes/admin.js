@@ -3,10 +3,9 @@
  */
 
 import express from 'express';
-import { OPENROUTER_MODELS } from '../config/constants.js';
+import { CONFIG } from '../config/config.js';
 import { createResponse } from '../utils/helpers.js';
 import { logger } from '../utils/logger.js';
-import { CONFIG } from '../config/config.js';
 
 const router = express.Router();
 
@@ -15,7 +14,7 @@ router.get('/data', (req, res) => {
   try {
     const adminData = {
       providers: CONFIG.DEFAULT_PRIORITY,
-      models: OPENROUTER_MODELS,
+      models: CONFIG.OPENROUTER_MODELS || [],
       currentConfig: {
         temperature: CONFIG.AI.DEFAULT_TEMPERATURE,
         maxTokens: CONFIG.AI.DEFAULT_MAX_TOKENS,
