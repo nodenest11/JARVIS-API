@@ -1,13 +1,6 @@
-/**
- * JARVIS AI API Server - Professional Multi-Provider AI Assistant
- * Optimized for production performance with Windows compatibility
- */
-
-// Load environment variables FIRST before any imports
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Set NODE_ENV if not set (for Windows compatibility)
 if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = 'development';
 }
@@ -17,12 +10,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import compression from 'compression';
 
-// Import configurations and utilities
 import { getConfig, validateConfig } from './src/config/config.js';
 import { logger } from './src/utils/logger.js';
 import { createResponse } from './src/utils/helpers.js';
 
-// Import middleware
 import {
   corsMiddleware,
   requestLogger,
@@ -30,11 +21,9 @@ import {
   rateLimiter
 } from './src/middleware/index.js';
 
-// Import routes
 import apiRoutes from './src/routes/api.js';
 import adminRoutes from './src/routes/admin.js';
 
-// Setup paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -168,17 +157,7 @@ class JarvisServer {
         environment: this.config.SERVER.NODE_ENV
       });
 
-      // Minimal console output in production
-      if (process.env.NODE_ENV === 'production') {
-        console.log(`🚀 JARVIS AI API Server running on port ${this.port} (${this.config.SERVER.NODE_ENV})`);
-      } else {
-      console.log(`\n🚀 JARVIS AI API Server running on port ${this.port}`);
-      console.log(`🌐 Server URL: ${this.config.SERVER.BASE_URL}`);
-      console.log(`📊 Admin Panel: ${this.config.SERVER.BASE_URL}/jarvis`);
-      console.log(`💬 Chat Interface: ${this.config.SERVER.BASE_URL}/jarvis/chat`);
-      console.log(`🔧 Environment: ${this.config.SERVER.NODE_ENV}`);
-      console.log(`🖥️  Host: ${host}`);
-      }
+      console.log(`🚀 JARVIS AI API running on port ${this.port} (${this.config.SERVER.NODE_ENV})`);
     });
   }
 }

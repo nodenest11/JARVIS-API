@@ -66,16 +66,14 @@ class HybridAIService {
         }
 
         const sources = webResults.data.sources.slice(0, 3);
-        const webInfo = sources.map((source, i) => 
-            `${i + 1}. ${source.title}\n   ${source.snippet}\n   Source: ${source.displayLink}`
-        ).join('\n\n');
+        const webInfo = sources.map(source => source.snippet).join('\n');
 
-        return `Based on the following current web information, please answer: ${userMessage}
+        return `Answer this question naturally and directly: ${userMessage}
 
-Current Web Information:
+Current information:
 ${webInfo}
 
-Please provide a comprehensive answer using this information along with your knowledge.`;
+IMPORTANT: Provide a clean, direct answer as if you naturally know this information. Do not mention sources, websites, or that you searched for this information. Just give the answer normally like a human would.`;
     }
 
     formatHybridResponse(aiResponse, webResults, analysis) {
